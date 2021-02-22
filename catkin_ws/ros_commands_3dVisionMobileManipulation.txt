@@ -1,0 +1,22 @@
+# source after creating a new package
+. ~/git/3DVisionMobileManipulation/catkin_ws/devel/setup.bash
+cd <catkin_ws-path>
+source devel/setup.bash
+source ~/.bashrc
+
+rospack find [package_name]
+
+# Start the realsense with pointcloud topic
+$ roslaunch realsense2_camera rs_camera.launch color_width:=1280 color_height:=720 filters:=pointcloud
+
+# Set Camera Controls Using Dynamic Reconfigure Params
+$ rosrun rqt_reconfigure rqt_reconfigure
+
+# pointcloud_to_pcd: Record the pointcloud into pcd file
+rosrun pcl_ros pointcloud_to_pcd input:=/camera/depth/color/points _prefix:=/tmp/pcd/pcd_
+
+# Run RVIZ with config file
+$ rosrun rviz rviz `rospack find rviz_configfiles_pkg`/d415_depth.rviz 
+
+# Launch the Realsense depth stream + rviz with a predifined config
+$ roslaunch pose_estimation_pkg rs_stream_depth.launch

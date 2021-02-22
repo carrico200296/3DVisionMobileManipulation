@@ -5,5 +5,5 @@
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
 subdirs("gtest")
-subdirs("aruco_detector")
+subdirs("aruco_pkg")
 subdirs("pose_estimation_pkg")

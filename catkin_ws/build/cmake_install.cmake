@@ -131,7 +131,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/gtest/cmake_install.cmake")
-  include("/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_detector/cmake_install.cmake")
+  include("/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/cmake_install.cmake")
   include("/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/cmake_install.cmake")
 
 endif()
