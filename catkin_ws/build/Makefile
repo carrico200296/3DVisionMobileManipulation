@@ -1338,6 +1338,19 @@ tf2_msgs_generate_messages_nodejs/fast:
 .PHONY : tf2_msgs_generate_messages_nodejs/fast
 
 #=============================================================================
+# Target rules for targets named pcd_read
+
+# Build rule for target.
+pcd_read: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcd_read
+.PHONY : pcd_read
+
+# fast build rule for target.
+pcd_read/fast:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/build
+.PHONY : pcd_read/fast
+
+#=============================================================================
 # Target rules for targets named pcl_example
 
 # Build rule for target.
@@ -1453,6 +1466,7 @@ help:
 	@echo "... actionlib_generate_messages_py"
 	@echo "... tf2_msgs_generate_messages_py"
 	@echo "... tf2_msgs_generate_messages_nodejs"
+	@echo "... pcd_read"
 	@echo "... pcl_example"
 .PHONY : help
 

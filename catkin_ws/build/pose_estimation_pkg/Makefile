@@ -68,6 +68,40 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -100,40 +134,6 @@ list_install_components:
 list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
-
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -168,6 +168,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+
+# Convenience name for target.
+pcd_read: pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+
+.PHONY : pcd_read
+
+# fast build rule for target.
+pcd_read/fast:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/build
+.PHONY : pcd_read/fast
+
+# Convenience name for target.
 pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule:
 	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
 .PHONY : pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
@@ -181,6 +196,33 @@ pcl_example: pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
 pcl_example/fast:
 	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/build
 .PHONY : pcl_example/fast
+
+src/pcd_read.o: src/pcd_read.cpp.o
+
+.PHONY : src/pcd_read.o
+
+# target to build an object file
+src/pcd_read.cpp.o:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.o
+.PHONY : src/pcd_read.cpp.o
+
+src/pcd_read.i: src/pcd_read.cpp.i
+
+.PHONY : src/pcd_read.i
+
+# target to preprocess a source file
+src/pcd_read.cpp.i:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.i
+.PHONY : src/pcd_read.cpp.i
+
+src/pcd_read.s: src/pcd_read.cpp.s
+
+.PHONY : src/pcd_read.s
+
+# target to generate assembly for a file
+src/pcd_read.cpp.s:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.s
+.PHONY : src/pcd_read.cpp.s
 
 src/pcl_example.o: src/pcl_example.cpp.o
 
@@ -216,13 +258,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
+	@echo "... install"
+	@echo "... pcd_read"
+	@echo "... edit_cache"
+	@echo "... pcl_example"
+	@echo "... rebuild_cache"
 	@echo "... install/local"
 	@echo "... test"
 	@echo "... list_install_components"
-	@echo "... pcl_example"
-	@echo "... rebuild_cache"
-	@echo "... edit_cache"
-	@echo "... install"
+	@echo "... src/pcd_read.o"
+	@echo "... src/pcd_read.i"
+	@echo "... src/pcd_read.s"
 	@echo "... src/pcl_example.o"
 	@echo "... src/pcl_example.i"
 	@echo "... src/pcl_example.s"

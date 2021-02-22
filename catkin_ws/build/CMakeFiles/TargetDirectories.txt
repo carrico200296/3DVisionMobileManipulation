@@ -124,10 +124,11 @@
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/CMakeFiles/tf2_msgs_generate_messages_py.dir
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/CMakeFiles/tf2_msgs_generate_messages_nodejs.dir
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/install/strip.dir
+/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/install.dir
+/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/pcd_read.dir
+/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/edit_cache.dir
+/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/pcl_example.dir
+/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/rebuild_cache.dir
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/install/local.dir
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/test.dir
 /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/list_install_components.dir
-/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/pcl_example.dir
-/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/rebuild_cache.dir
-/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/edit_cache.dir
-/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/install.dir

@@ -511,7 +511,7 @@ aruco_pkg/preinstall:
 aruco_pkg/CMakeFiles/webcam_pub.dir/all:
 	$(MAKE) -f aruco_pkg/CMakeFiles/webcam_pub.dir/build.make aruco_pkg/CMakeFiles/webcam_pub.dir/depend
 	$(MAKE) -f aruco_pkg/CMakeFiles/webcam_pub.dir/build.make aruco_pkg/CMakeFiles/webcam_pub.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles --progress-num=18,19 "Built target webcam_pub"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles --progress-num=20,21 "Built target webcam_pub"
 .PHONY : aruco_pkg/CMakeFiles/webcam_pub.dir/all
 
 # Include target in all.
@@ -3115,11 +3115,13 @@ clean: aruco_pkg/CMakeFiles/tf2_msgs_generate_messages_nodejs.dir/clean
 # Directory level rules for directory pose_estimation_pkg
 
 # Convenience name for "all" pass in the directory.
+pose_estimation_pkg/all: pose_estimation_pkg/CMakeFiles/pcd_read.dir/all
 pose_estimation_pkg/all: pose_estimation_pkg/CMakeFiles/pcl_example.dir/all
 
 .PHONY : pose_estimation_pkg/all
 
 # Convenience name for "clean" pass in the directory.
+pose_estimation_pkg/clean: pose_estimation_pkg/CMakeFiles/pcd_read.dir/clean
 pose_estimation_pkg/clean: pose_estimation_pkg/CMakeFiles/pcl_example.dir/clean
 
 .PHONY : pose_estimation_pkg/clean
@@ -3130,13 +3132,50 @@ pose_estimation_pkg/preinstall:
 .PHONY : pose_estimation_pkg/preinstall
 
 #=============================================================================
+# Target rules for target pose_estimation_pkg/CMakeFiles/pcd_read.dir
+
+# All Build rule for target.
+pose_estimation_pkg/CMakeFiles/pcd_read.dir/all:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/depend
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles --progress-num=16,17 "Built target pcd_read"
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_read.dir/all
+
+# Include target in all.
+all: pose_estimation_pkg/CMakeFiles/pcd_read.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_read.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles 0
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+
+# Convenience name for target.
+pcd_read: pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+
+.PHONY : pcd_read
+
+# clean rule for target.
+pose_estimation_pkg/CMakeFiles/pcd_read.dir/clean:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/clean
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_read.dir/clean
+
+# clean rule for target.
+clean: pose_estimation_pkg/CMakeFiles/pcd_read.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target pose_estimation_pkg/CMakeFiles/pcl_example.dir
 
 # All Build rule for target.
 pose_estimation_pkg/CMakeFiles/pcl_example.dir/all:
 	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/depend
 	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles --progress-num=16,17 "Built target pcl_example"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/CMakeFiles --progress-num=18,19 "Built target pcl_example"
 .PHONY : pose_estimation_pkg/CMakeFiles/pcl_example.dir/all
 
 # Include target in all.
