@@ -68,6 +68,27 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
@@ -91,17 +112,6 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -124,16 +134,6 @@ test:
 test/fast: test
 
 .PHONY : test/fast
-
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -168,88 +168,172 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
-.PHONY : pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/rule:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/rule
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/rule
 
 # Convenience name for target.
-pcd_read: pose_estimation_pkg/CMakeFiles/pcd_read.dir/rule
+pcd_visualizer: pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/rule
 
-.PHONY : pcd_read
+.PHONY : pcd_visualizer
 
 # fast build rule for target.
-pcd_read/fast:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/build
-.PHONY : pcd_read/fast
+pcd_visualizer/fast:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build
+.PHONY : pcd_visualizer/fast
 
 # Convenience name for target.
-pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
-.PHONY : pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
+pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/rule:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/rule
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/rule
 
 # Convenience name for target.
-pcl_example: pose_estimation_pkg/CMakeFiles/pcl_example.dir/rule
+pcd_visualizer_cad: pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/rule
 
-.PHONY : pcl_example
+.PHONY : pcd_visualizer_cad
 
 # fast build rule for target.
-pcl_example/fast:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/build
-.PHONY : pcl_example/fast
+pcd_visualizer_cad/fast:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build
+.PHONY : pcd_visualizer_cad/fast
 
-src/pcd_read.o: src/pcd_read.cpp.o
+# Convenience name for target.
+pose_estimation_pkg/CMakeFiles/pcl_ros.dir/rule:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcl_ros.dir/rule
+.PHONY : pose_estimation_pkg/CMakeFiles/pcl_ros.dir/rule
 
-.PHONY : src/pcd_read.o
+# Convenience name for target.
+pcl_ros: pose_estimation_pkg/CMakeFiles/pcl_ros.dir/rule
+
+.PHONY : pcl_ros
+
+# fast build rule for target.
+pcl_ros/fast:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build
+.PHONY : pcl_ros/fast
+
+# Convenience name for target.
+pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/rule:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/rule
+.PHONY : pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/rule
+
+# Convenience name for target.
+pcd_clustering: pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/rule
+
+.PHONY : pcd_clustering
+
+# fast build rule for target.
+pcd_clustering/fast:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build
+.PHONY : pcd_clustering/fast
+
+src/pcd_clustering.o: src/pcd_clustering.cpp.o
+
+.PHONY : src/pcd_clustering.o
 
 # target to build an object file
-src/pcd_read.cpp.o:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.o
-.PHONY : src/pcd_read.cpp.o
+src/pcd_clustering.cpp.o:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/src/pcd_clustering.cpp.o
+.PHONY : src/pcd_clustering.cpp.o
 
-src/pcd_read.i: src/pcd_read.cpp.i
+src/pcd_clustering.i: src/pcd_clustering.cpp.i
 
-.PHONY : src/pcd_read.i
+.PHONY : src/pcd_clustering.i
 
 # target to preprocess a source file
-src/pcd_read.cpp.i:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.i
-.PHONY : src/pcd_read.cpp.i
+src/pcd_clustering.cpp.i:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/src/pcd_clustering.cpp.i
+.PHONY : src/pcd_clustering.cpp.i
 
-src/pcd_read.s: src/pcd_read.cpp.s
+src/pcd_clustering.s: src/pcd_clustering.cpp.s
 
-.PHONY : src/pcd_read.s
+.PHONY : src/pcd_clustering.s
 
 # target to generate assembly for a file
-src/pcd_read.cpp.s:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/src/pcd_read.cpp.s
-.PHONY : src/pcd_read.cpp.s
+src/pcd_clustering.cpp.s:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/src/pcd_clustering.cpp.s
+.PHONY : src/pcd_clustering.cpp.s
 
-src/pcl_example.o: src/pcl_example.cpp.o
+src/pcd_visualizer.o: src/pcd_visualizer.cpp.o
 
-.PHONY : src/pcl_example.o
+.PHONY : src/pcd_visualizer.o
 
 # target to build an object file
-src/pcl_example.cpp.o:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/src/pcl_example.cpp.o
-.PHONY : src/pcl_example.cpp.o
+src/pcd_visualizer.cpp.o:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/src/pcd_visualizer.cpp.o
+.PHONY : src/pcd_visualizer.cpp.o
 
-src/pcl_example.i: src/pcl_example.cpp.i
+src/pcd_visualizer.i: src/pcd_visualizer.cpp.i
 
-.PHONY : src/pcl_example.i
+.PHONY : src/pcd_visualizer.i
 
 # target to preprocess a source file
-src/pcl_example.cpp.i:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/src/pcl_example.cpp.i
-.PHONY : src/pcl_example.cpp.i
+src/pcd_visualizer.cpp.i:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/src/pcd_visualizer.cpp.i
+.PHONY : src/pcd_visualizer.cpp.i
 
-src/pcl_example.s: src/pcl_example.cpp.s
+src/pcd_visualizer.s: src/pcd_visualizer.cpp.s
 
-.PHONY : src/pcl_example.s
+.PHONY : src/pcd_visualizer.s
 
 # target to generate assembly for a file
-src/pcl_example.cpp.s:
-	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/src/pcl_example.cpp.s
-.PHONY : src/pcl_example.cpp.s
+src/pcd_visualizer.cpp.s:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/src/pcd_visualizer.cpp.s
+.PHONY : src/pcd_visualizer.cpp.s
+
+src/pcd_visualizer_cad.o: src/pcd_visualizer_cad.cpp.o
+
+.PHONY : src/pcd_visualizer_cad.o
+
+# target to build an object file
+src/pcd_visualizer_cad.cpp.o:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/src/pcd_visualizer_cad.cpp.o
+.PHONY : src/pcd_visualizer_cad.cpp.o
+
+src/pcd_visualizer_cad.i: src/pcd_visualizer_cad.cpp.i
+
+.PHONY : src/pcd_visualizer_cad.i
+
+# target to preprocess a source file
+src/pcd_visualizer_cad.cpp.i:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/src/pcd_visualizer_cad.cpp.i
+.PHONY : src/pcd_visualizer_cad.cpp.i
+
+src/pcd_visualizer_cad.s: src/pcd_visualizer_cad.cpp.s
+
+.PHONY : src/pcd_visualizer_cad.s
+
+# target to generate assembly for a file
+src/pcd_visualizer_cad.cpp.s:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/src/pcd_visualizer_cad.cpp.s
+.PHONY : src/pcd_visualizer_cad.cpp.s
+
+src/pcl_ros.o: src/pcl_ros.cpp.o
+
+.PHONY : src/pcl_ros.o
+
+# target to build an object file
+src/pcl_ros.cpp.o:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_ros.dir/src/pcl_ros.cpp.o
+.PHONY : src/pcl_ros.cpp.o
+
+src/pcl_ros.i: src/pcl_ros.cpp.i
+
+.PHONY : src/pcl_ros.i
+
+# target to preprocess a source file
+src/pcl_ros.cpp.i:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_ros.dir/src/pcl_ros.cpp.i
+.PHONY : src/pcl_ros.cpp.i
+
+src/pcl_ros.s: src/pcl_ros.cpp.s
+
+.PHONY : src/pcl_ros.s
+
+# target to generate assembly for a file
+src/pcl_ros.cpp.s:
+	cd /home/carlos/git/3DVisionMobileManipulation/catkin_ws/build && $(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_ros.dir/src/pcl_ros.cpp.s
+.PHONY : src/pcl_ros.cpp.s
 
 # Help Target
 help:
@@ -258,20 +342,28 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
-	@echo "... install"
-	@echo "... pcd_read"
-	@echo "... edit_cache"
-	@echo "... pcl_example"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... pcd_visualizer"
+	@echo "... install"
+	@echo "... pcd_visualizer_cad"
+	@echo "... pcl_ros"
+	@echo "... edit_cache"
+	@echo "... pcd_clustering"
 	@echo "... install/local"
 	@echo "... test"
-	@echo "... list_install_components"
-	@echo "... src/pcd_read.o"
-	@echo "... src/pcd_read.i"
-	@echo "... src/pcd_read.s"
-	@echo "... src/pcl_example.o"
-	@echo "... src/pcl_example.i"
-	@echo "... src/pcl_example.s"
+	@echo "... src/pcd_clustering.o"
+	@echo "... src/pcd_clustering.i"
+	@echo "... src/pcd_clustering.s"
+	@echo "... src/pcd_visualizer.o"
+	@echo "... src/pcd_visualizer.i"
+	@echo "... src/pcd_visualizer.s"
+	@echo "... src/pcd_visualizer_cad.o"
+	@echo "... src/pcd_visualizer_cad.i"
+	@echo "... src/pcd_visualizer_cad.s"
+	@echo "... src/pcl_ros.o"
+	@echo "... src/pcl_ros.i"
+	@echo "... src/pcl_ros.s"
 .PHONY : help
 
 

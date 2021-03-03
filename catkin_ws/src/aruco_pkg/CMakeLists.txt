@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(aruco_pkg)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   image_geometry
 )
-find_package(OpenCV) # TO USE OPENCV
+find_package(OpenCV 3.2) # TO USE OPENCV
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)

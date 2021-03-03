@@ -14,9 +14,19 @@ $ rosrun rqt_reconfigure rqt_reconfigure
 
 # pointcloud_to_pcd: Record the pointcloud into pcd file
 rosrun pcl_ros pointcloud_to_pcd input:=/camera/depth/color/points _prefix:=/tmp/pcd/pcd_
+rosrun pcl_ros pointcloud_to_pcd input:=/camera/depth/color/points _prefix:=/home/carlos/git/3DVisionMobileManipulation/pointCloud/pointCloud_samples/pcd_
 
 # Run RVIZ with config file
 $ rosrun rviz rviz `rospack find rviz_configfiles_pkg`/d415_depth.rviz 
 
 # Launch the Realsense depth stream + rviz with a predifined config
 $ roslaunch pose_estimation_pkg rs_stream_depth.launch
+
+
+# Check the package that the system has installed
+pip freeze
+
+PROBLEMS WITH ANACONDA AND ROS
+we need to comment out the export of python from anaconda lines in the bashrc file 
+The way to resolve this problem is to comment out the line:
+`export PATH=/usr/bin/anaconda/bin:$PATH' in your BASHRC file.

@@ -137,8 +137,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(pcl_example src/pcl_example.cpp)
-add_executable(pcd_read src/pcd_read.cpp)
+add_executable(pcl_ros src/pcl_ros.cpp)
+add_executable(pcd_visualizer src/pcd_visualizer.cpp)
+add_executable(pcd_visualizer_cad src/pcd_visualizer_cad.cpp)
+add_executable(pcd_clustering src/pcd_clustering.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,8 +153,10 @@ add_executable(pcd_read src/pcd_read.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(pcl_example ${catkin_LIBRARIES})
-target_link_libraries(pcd_read ${catkin_LIBRARIES} pcl_visualization)
+target_link_libraries(pcl_ros ${catkin_LIBRARIES})
+target_link_libraries(pcd_visualizer ${catkin_LIBRARIES} pcl_visualization)
+target_link_libraries(pcd_visualizer_cad ${catkin_LIBRARIES} pcl_visualization)
+target_link_libraries(pcd_clustering ${catkin_LIBRARIES} pcl_visualization)
 
 
 #############

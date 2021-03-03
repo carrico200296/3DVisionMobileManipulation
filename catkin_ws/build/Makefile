@@ -1338,30 +1338,56 @@ tf2_msgs_generate_messages_nodejs/fast:
 .PHONY : tf2_msgs_generate_messages_nodejs/fast
 
 #=============================================================================
-# Target rules for targets named pcd_read
+# Target rules for targets named pcd_visualizer
 
 # Build rule for target.
-pcd_read: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 pcd_read
-.PHONY : pcd_read
+pcd_visualizer: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcd_visualizer
+.PHONY : pcd_visualizer
 
 # fast build rule for target.
-pcd_read/fast:
-	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_read.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_read.dir/build
-.PHONY : pcd_read/fast
+pcd_visualizer/fast:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/build
+.PHONY : pcd_visualizer/fast
 
 #=============================================================================
-# Target rules for targets named pcl_example
+# Target rules for targets named pcd_visualizer_cad
 
 # Build rule for target.
-pcl_example: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 pcl_example
-.PHONY : pcl_example
+pcd_visualizer_cad: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcd_visualizer_cad
+.PHONY : pcd_visualizer_cad
 
 # fast build rule for target.
-pcl_example/fast:
-	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_example.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_example.dir/build
-.PHONY : pcl_example/fast
+pcd_visualizer_cad/fast:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_visualizer_cad.dir/build
+.PHONY : pcd_visualizer_cad/fast
+
+#=============================================================================
+# Target rules for targets named pcl_ros
+
+# Build rule for target.
+pcl_ros: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcl_ros
+.PHONY : pcl_ros
+
+# fast build rule for target.
+pcl_ros/fast:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build.make pose_estimation_pkg/CMakeFiles/pcl_ros.dir/build
+.PHONY : pcl_ros/fast
+
+#=============================================================================
+# Target rules for targets named pcd_clustering
+
+# Build rule for target.
+pcd_clustering: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcd_clustering
+.PHONY : pcd_clustering
+
+# fast build rule for target.
+pcd_clustering/fast:
+	$(MAKE) -f pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build.make pose_estimation_pkg/CMakeFiles/pcd_clustering.dir/build
+.PHONY : pcd_clustering/fast
 
 # Help Target
 help:
@@ -1466,8 +1492,10 @@ help:
 	@echo "... actionlib_generate_messages_py"
 	@echo "... tf2_msgs_generate_messages_py"
 	@echo "... tf2_msgs_generate_messages_nodejs"
-	@echo "... pcd_read"
-	@echo "... pcl_example"
+	@echo "... pcd_visualizer"
+	@echo "... pcd_visualizer_cad"
+	@echo "... pcl_ros"
+	@echo "... pcd_clustering"
 .PHONY : help
 
 
