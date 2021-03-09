@@ -31,6 +31,8 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/extract_clusters.h>
+// PCL Registration
+#include <pcl/registration/icp.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
@@ -153,9 +155,9 @@ int main (int argc, char** argv)
           pcd_array[j] = pcd_clustered;
 
           std::cout << "PointCloud Cluster "<< j << ": " << pcd_array[j]->size() << " data points." << std::endl;
-          //std::stringstream ss;
-          //ss << "cloud_cluster_" << j << ".pcd";
-          //writer.write<pcl::PointXYZRGBA> (ss.str(), *pcd_clustered, false);
+          std::stringstream ss;
+          ss << "cloud_cluster_" << j << ".pcd";
+          writer.write<pcl::PointXYZRGBA> (ss.str(), *pcd_clustered, false);
           j++;
         }
 
@@ -194,7 +196,7 @@ int main (int argc, char** argv)
   viewer_global.setBackgroundColor(0.0, 0.0, 0.0);
   viewer_global.addCoordinateSystem(0.1);
   viewer_global.addPointCloud<pcl::PointXYZRGBA> (pcd_blob, "pcd");
-  viewer_global.addPointCloud<pcl::PointXYZ> (cad, "cad");
+  //viewer_global.addPointCloud<pcl::PointXYZ> (cad, "cad");
 
   while (!viewer_global.wasStopped())
   {

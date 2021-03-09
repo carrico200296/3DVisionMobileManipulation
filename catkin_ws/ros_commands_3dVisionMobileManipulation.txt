@@ -30,3 +30,32 @@ PROBLEMS WITH ANACONDA AND ROS
 we need to comment out the export of python from anaconda lines in the bashrc file 
 The way to resolve this problem is to comment out the line:
 `export PATH=/usr/bin/anaconda/bin:$PATH' in your BASHRC file.
+
+HOW TO INSTALL FROM SCRATCH: moveit, ros-industrial UR pkg and ur5_e_moveit_config, hand-eye rviz calibration plugin, UR-ROS driver official
+Pre setup: create a ws_moveit, ur_robot_ws and ur_driver_ws folders -> outside the git repository.
+1. Install moveit from source in the ws_moveit workspace (link: https://moveit.ros.org/install/source/)
+2. Build ros-industrial/universal-robot pkg from source in the ur_robot_ws workspace (link: https://github.com/ros-industrial/universal_robot)
+3. Build MoveIt Hand-Eye Calibration pkg in ws_moveit workspace (link: https://ros-planning.github.io/moveit_tutorials/doc/hand_eye_calibration/hand_eye_calibration_tutorial.html)
+    - IMPORTANT: the git clone link is wrong, the correct one is: https://github.com/ros-planning/moveit_calibration.git
+4. Build the UR-ROS DRIVER as a binary package through the ROS distribution of ROS melodic in the ur_driver_ws (link: https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#building)
+    -  if there is any issue, check the google browser forder (there are some link from previous solved errors)
+
+HOW TO RUN UR ROS DRIVER with Moveit Package for UR5e (HAND-EYE Calibration)
+1. ~/ros_ws/ur_driver_ws$ roslaunch ur_calibration calibration_correction.launch robot_ip:=168.192.10.20 target_filename:="/home/carlos/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_fixed_station_calibration.yaml"
+2. ~/ros_ws/ur_driver_ws$ roslaunch ur_robot_driver ur5e_bringup.launch robot_ip:=192.168.10.20 kinematics_config:="/home/carlos/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_fixed_station_calibration.yaml"
+3. ~/ros_ws/ur_robot_ws$ roslaunch ur5_e_moveit_config ur5_e_moveit_planning_execution.launch 
+4. ~/ros_ws/ur_robot_ws$ roslaunch ur5_e_moveit_config moveit_rviz.launch config:=true (the HAND-EYE Calibration plugin is already setup)
+5. ~/ros_ws/ur_driver_ws$ roslaunch pose_estimation_pkg rs_stream_depth.launch (camera node to get the topics from D415)
+or
+5. roslaunch realsense2_camera rs_camera.launch color_width:=1280 color_height:=720
+
+
+
+
+
+CREATE THE RT_KERNEL (not used)
+$ wget https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.93-rt51.patch.xz
+$ wget https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.93-rt51.patch.sign
+$ wget https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.93.tar.xz
+$ wget https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.93.tar.sign
+

@@ -55,6 +55,7 @@ int main (int argc, char** argv)
   std::cerr << "PointCloud input: " << pcd->width * pcd->height 
   << " data points (" << pcl::getFieldsList (*pcd) << ")." << std::endl;
 
+  /*
   pcl::PCLPointCloud2::Ptr pcd_filtered (new pcl::PCLPointCloud2);
   pcl::PassThrough<pcl::PCLPointCloud2> filter_z;
   filter_z.setInputCloud(pcd);
@@ -62,13 +63,15 @@ int main (int argc, char** argv)
   //filter_z.setFilterLimitsNegative(true);
   filter_z.setFilterLimits(-0.150/2, 0.150/2);
   filter_z.filter(*pcd_filtered);
+  */
 
   PointCloud::Ptr pcd_blob(new PointCloud);
-  pcl::fromPCLPointCloud2(*pcd_filtered, *pcd_blob);
+  pcl::fromPCLPointCloud2(*pcd, *pcd_blob);
 
   pcl::VoxelGrid<pcl::PointXYZ> downsample;
   downsample.setInputCloud(pcd_blob);
-  downsample.setLeafSize(0.001f, 0.001f, 0.001f);
+  downsample.setLeafSize(0.001f, 0.001f, 0.001f); //for m200
+  //downsample.setLeafSize(0.5f, 0.5f, 0.5f); //for m300
   downsample.filter(*pcd_blob);
 
   std::cerr << "PointCloud downsampled: " << pcd_blob->width * pcd_blob->height 
@@ -80,9 +83,9 @@ int main (int argc, char** argv)
   std::cout << "Max Distance between points: " << max_distance << " m" << std::endl;
   */
   
-  //pcl::PCDWriter writer;
-  //writer.write<pcl::PointXYZ> ("scaled_downsampled_m200.pcd", *pcd_blob, false);
-  //std::cout << "PCD file saved" << std::endl;
+  pcl::PCDWriter writer;
+  writer.write<pcl::PointXYZ> ("scaled_downsampled_m300.pcd", *pcd_blob, false);
+  std::cout << "PCD file saved" << std::endl;
 
   pcl::visualization::PCLVisualizer viewer_global ("PCL Viewer");
   viewer_global.setBackgroundColor(0.0, 0.0, 0.0);
