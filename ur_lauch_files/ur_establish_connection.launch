@@ -13,7 +13,7 @@
 
     <!-- LAUNCH FILE to establish connection with UR robot using the UR ROS DRIVER -->
     <arg name="robot_ip" default="192.168.10.20"/>
-    <arg name="kinematics_config" default="/home/carlos/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_fixed_station_calibration.yaml"/>
+    <arg name="kinematics_config" default="/home/$USER/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_fixed_station_calibration.yaml"/>
 
     <include file="$(find ur_robot_driver)/launch/ur5e_bringup.launch">
         <arg name="robot_ip" value="$(arg robot_ip)"/>
