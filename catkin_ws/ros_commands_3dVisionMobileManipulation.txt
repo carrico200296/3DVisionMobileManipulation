@@ -69,7 +69,7 @@ or
 >>>> LAUNCH FILES: 
 # UR ROS DRIVER
 $ cd ~/ros_ws/ur_driver_ws
-$ roslaunch ur_robot_driver ur_establish_connection.launch (rs_calibration.launch included HERE)
+$ roslaunch ur_robot_driver ur_establish_connection.launch (rs_calibration_ur5e_fixed.launch included HERE)
 
 # RVIZ + HAND-EYE CALIBRATION plug-in
 $ cd ~/ros_ws/moveit_ws
