@@ -1,0 +1,7 @@
+
+add ur5_e_planning_moveit_rviz.launch
+pwd: /home/ccdn/ros_ws/ur_robot_ws/src/universal_robot/ur5_e_moveit_config/launch
+
+add ur_establish_connection.launch
+pwd: /home/ccdn/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_robot_driver/launch
+
