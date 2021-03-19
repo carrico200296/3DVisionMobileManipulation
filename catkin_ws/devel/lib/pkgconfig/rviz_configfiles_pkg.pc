@@ -1,8 +1,0 @@
-prefix=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel
-
-Name: rviz_configfiles_pkg
-Description: Description of rviz_configfiles_pkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

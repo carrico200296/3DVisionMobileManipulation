@@ -37,6 +37,11 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkg.pc")
 endif()
@@ -50,5 +55,9 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pose_estimation_pkg" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/package.xml")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pose_estimation_pkg" TYPE PROGRAM FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/global_local_registration.py")
 endif()
 

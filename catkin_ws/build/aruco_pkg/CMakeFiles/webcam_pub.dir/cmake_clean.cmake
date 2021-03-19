@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/webcam_pub.dir/src/webcam_pub.cpp.o"
-  "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel/lib/aruco_pkg/webcam_pub.pdb"
   "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel/lib/aruco_pkg/webcam_pub"
+  "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel/lib/aruco_pkg/webcam_pub.pdb"
+  "CMakeFiles/webcam_pub.dir/src/webcam_pub.cpp.o"
 )
 
 # Per-language clean rules from dependency scanning.

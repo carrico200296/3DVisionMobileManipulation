@@ -6,6 +6,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 ros::Publisher pub;

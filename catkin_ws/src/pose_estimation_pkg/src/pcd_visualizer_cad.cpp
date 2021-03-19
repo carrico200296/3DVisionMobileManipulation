@@ -34,6 +34,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/extract_clusters.h>
 
+
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB; 
@@ -70,8 +71,7 @@ int main (int argc, char** argv)
 
   pcl::VoxelGrid<pcl::PointXYZ> downsample;
   downsample.setInputCloud(pcd_blob);
-  downsample.setLeafSize(0.001f, 0.001f, 0.001f); //for m200
-  //downsample.setLeafSize(0.5f, 0.5f, 0.5f); //for m300
+  downsample.setLeafSize(0.001f, 0.001f, 0.001f);
   downsample.filter(*pcd_blob);
 
   std::cerr << "PointCloud downsampled: " << pcd_blob->width * pcd_blob->height 

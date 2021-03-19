@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  tf2
+  tf2_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -109,8 +111,8 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES pose_estimation_pkg
-#  CATKIN_DEPENDS cv_bridge pcl_conversions pcl_ros roscpp rospy sensor_msgs std_msgs
-#  DEPENDS system_lib
+#  CATKIN_DEPENDS cv_bridge pcl_conversions pcl_ros roscpp rospy sensor_msgs std_msgs open3d_conversions
+#  DEPENDS Open3D
 )
 
 ###########
@@ -119,6 +121,8 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+#include_directories(${EIGEN3_INCLUDE_DIR}) 
+#include_directories(${Open3D_LIBRARY_DIRS})
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
@@ -157,8 +161,6 @@ target_link_libraries(pcl_ros ${catkin_LIBRARIES})
 target_link_libraries(pcd_visualizer ${catkin_LIBRARIES} pcl_visualization)
 target_link_libraries(pcd_visualizer_cad ${catkin_LIBRARIES} pcl_visualization)
 target_link_libraries(pcd_clustering ${catkin_LIBRARIES} pcl_visualization)
-
-
 #############
 ## Install ##
 #############
@@ -168,10 +170,10 @@ target_link_libraries(pcd_clustering ${catkin_LIBRARIES} pcl_visualization)
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+   scripts/global_local_registration.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

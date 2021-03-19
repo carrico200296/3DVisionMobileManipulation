@@ -1,0 +1,13 @@
+<launch>
+
+  <!-- LAUNCH FILE to run moveit config for UR5e planning execution-->
+  <include file="$(find ur5_e_moveit_config)/launch/ur5_e_moveit_planning_execution.launch ">
+  </include>
+
+  <!-- LAUNCH FILE to run Moveit RVIZ for UR5e -->
+  <arg name="config" default="true"/>
+
+  <include file="$(find ur5_e_moveit_config)/launch/moveit_rviz.launch">
+      <arg name="config" value="$(arg config)"/>
+  </include>
+</launch>

@@ -48,7 +48,7 @@ int main (int argc, char** argv)
 
   // Read cad file
   PointCloud::Ptr cad(new PointCloud);
-  bool cad_bool = true;
+  bool cad_bool = false;
   if (cad_bool == true)
   {
     pcl::PCLPointCloud2::Ptr pcd_cad (new pcl::PCLPointCloud2);

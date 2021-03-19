@@ -19,7 +19,6 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/opt/ros/melodic/include"
   "/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
-  "/usr/include/opencv"
   "/usr/include/eigen3"
   "/usr/include/pcl-1.8"
   "/usr/include/ni"
@@ -31,11 +30,11 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"
   "/usr/lib/x86_64-linux-gnu/openmpi/include"
   "/usr/include/python2.7"
-  "/usr/include/x86_64-linux-gnu"
   "/usr/include/hdf5/openmpi"
   "/usr/include/libxml2"
   "/usr/include/jsoncpp"
   "/usr/include/tcl"
+  "/usr/include/opencv"
   )
 
 # Targets to which this target links.
