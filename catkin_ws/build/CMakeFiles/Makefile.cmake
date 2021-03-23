@@ -22,7 +22,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/aruco_pkg/package.xml"
   "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/CMakeLists.txt"
   "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/package.xml"
-  "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/scripts/global_local_registration.py"
+  "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/scripts/pose_estimation.py"
   "/opt/ros/melodic/share/actionlib/cmake/actionlib-msg-extras.cmake"
   "/opt/ros/melodic/share/actionlib/cmake/actionlibConfig-version.cmake"
   "/opt/ros/melodic/share/actionlib/cmake/actionlibConfig.cmake"
@@ -309,7 +309,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "pose_estimation_pkg/catkin_generated/stamps/pose_estimation_pkg/pkg.pc.em.stamp"
   "pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig.cmake"
   "pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig-version.cmake"
-  "pose_estimation_pkg/catkin_generated/stamps/pose_estimation_pkg/global_local_registration.py.stamp"
+  "pose_estimation_pkg/catkin_generated/stamps/pose_estimation_pkg/pose_estimation.py.stamp"
   "pose_estimation_pkg/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 

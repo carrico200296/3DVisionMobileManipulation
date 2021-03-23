@@ -58,6 +58,6 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pose_estimation_pkg" TYPE PROGRAM FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/global_local_registration.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pose_estimation_pkg" TYPE PROGRAM FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation.py")
 endif()
 

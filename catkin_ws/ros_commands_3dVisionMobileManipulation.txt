@@ -99,9 +99,39 @@ PACKAGES INSTALLED in laptop to use tf and do transformation:
 1. sudo apt-get install ros-melodic-tf2-tools ros-melodic-tf
 
 TF COMMANDS
+info: RPY (roll pitch yaw) is rotation around ZYX
 $ rosrun tf view_frames (save a frames.pdf file)
 $ rosrun rqt_tf_tree rqt_tf_tree
 $ rosrun tf tf_echo <source_frame> <target_frame> [echo_rate]
+
+# Transformation of /camera_link frame respect to the /wrist_3_link frame
+Homogeneous Transformation of /camera_link respect to /wrist_3_frame:
+[[-0.00465274 -0.99986592 -0.01569957 -0.01900175]
+ [-0.00812703  0.01573701 -0.99984307 -0.0842239 ]
+ [ 0.9999562  -0.00452439 -0.00819913  0.01904847]
+ [ 0.          0.          0.          1.        ]]
+Translation: X Y Z
+[-0.01900175 -0.0842239   0.01904847]
+Rotation: quaternion
+[ 0.49694298 -0.50709689  0.49515566  0.50072077]
+$ rosrun tf static_transform_publisher -0.01900175 -0.0842239 0.01904847 0.49694298 -0.50709689  0.49515566  0.50072077 wrist_3_link camera_link 200.0
+
+After applying the /wrist_3_link to /camera_link transformation, this is the result:
+$rosrun tf tf_echo wrist_3_link camera_color_optical_frame
+- Translation: [-0.034, -0.084, 0.019]
+- Rotation: in Quaternion [0.007, -0.002, -0.007, 1.000]
+            in RPY (radian) [0.014, -0.003, -0.015]
+            in RPY (degree) [0.781, -0.188, -0.841]
+
+After applying the /wrist_3_link /camera_color_optical_frame transformation from the moveit calibration, this is the result:
+$ rosrun tf tf_echo wrist_3_link camera_color_optical_frame
+- Translation: [-0.034, -0.084, 0.019]
+- Rotation: in Quaternion [0.007, -0.002, -0.007, 1.000]
+            in RPY (radian) [0.014, -0.003, -0.015]
+            in RPY (degree) [0.796, -0.173, -0.858]
+
+I CONFIRM THAT THE TRANSFORMATION IS CORRECT!!!!!!!!!!!!!
+
 
 
 
