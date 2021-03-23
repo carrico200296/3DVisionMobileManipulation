@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/src/pcd_visualizer.cpp" "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/src/pcd_visualizer.cpp.o"
+  "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/src/pcd_visualizer.cpp" "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/CMakeFiles/pcd_visualizer.dir/src/pcd_visualizer.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -26,11 +26,12 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/include/openni2"
   "/usr/include/vtk-6.3"
   "/usr/include/freetype2"
-  "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
-  "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"
-  "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"
-  "/usr/lib/x86_64-linux-gnu/openmpi/include"
+  "/usr/lib/aarch64-linux-gnu/openmpi/include/openmpi"
+  "/usr/lib/aarch64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"
+  "/usr/lib/aarch64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"
+  "/usr/lib/aarch64-linux-gnu/openmpi/include"
   "/usr/include/python2.7"
+  "/usr/include/aarch64-linux-gnu"
   "/usr/include/hdf5/openmpi"
   "/usr/include/libxml2"
   "/usr/include/jsoncpp"

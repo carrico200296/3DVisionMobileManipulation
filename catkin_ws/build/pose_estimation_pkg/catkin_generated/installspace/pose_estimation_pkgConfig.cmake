@@ -67,14 +67,14 @@ set(pose_estimation_pkg_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(pose_estimation_pkg_SOURCE_PREFIX /home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg)
-  set(pose_estimation_pkg_DEVEL_PREFIX /home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel)
+  set(pose_estimation_pkg_SOURCE_PREFIX /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg)
+  set(pose_estimation_pkg_DEVEL_PREFIX /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/devel)
   set(pose_estimation_pkg_INSTALL_PREFIX "")
   set(pose_estimation_pkg_PREFIX ${pose_estimation_pkg_DEVEL_PREFIX})
 else()
   set(pose_estimation_pkg_SOURCE_PREFIX "")
   set(pose_estimation_pkg_DEVEL_PREFIX "")
-  set(pose_estimation_pkg_INSTALL_PREFIX /home/carlos/git/3DVisionMobileManipulation/catkin_ws/install)
+  set(pose_estimation_pkg_INSTALL_PREFIX /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/install)
   set(pose_estimation_pkg_PREFIX ${pose_estimation_pkg_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/carlos/git/3DVisionMobileManipulation/catkin_ws/install/lib;/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel/lib;/opt/ros/melodic/lib)
+    foreach(path /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/install/lib;/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/devel/lib;/opt/ros/melodic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

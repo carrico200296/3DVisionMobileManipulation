@@ -54,6 +54,8 @@ Pre-setup dependencies: install rosdep (1. sudo apt-get install python-rosdep  2
     - catkin_make is also working for both packages
 4. Build the UR-ROS DRIVER as a binary package through the ROS distribution of ROS melodic in the ur_driver_ws (link: https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#building)
     -  if there is any issue, check the google browser forder (there are some link from previous solved errors)
+IMPORTANT: it is possible to catkin build the moveit_ws with moveit package + hand_eye_calibration package + universal_robot package
+
 
 >>>HOW TO RUN UR ROS DRIVER with Moveit Package for UR5e (HAND-EYE Calibration)
 $USER = carlos(laptop) or ccdn(jetsonNano)
@@ -71,22 +73,22 @@ or
 $ cd ~/ros_ws/ur_driver_ws
 $ roslaunch ur_robot_driver ur_establish_connection.launch (rs_calibration_ur5e_fixed.launch included HERE)
 
-# RVIZ + HAND-EYE CALIBRATION plug-in
-$ cd ~/ros_ws/moveit_ws
-$ rviz (only for doing the HAND-EYE Calibration)
-
-# REALSENSE DEPTH CAMERA CONNECTION + RVIZ visualization
+# REALSENSE DEPTH CAMERA CONNECTION + RVIZ visualization + static_transform_publisher to connect wrist_3_link with camera_link
 $ cd ~/git/3DVisionMobileManipulation/catkin_ws
 $ roslaunch pose_estimation_pkg rs_stream_depth.launch
-$ roslaunch realsense2_camera rs_camera.launch color_width:=1280 color_height:=720 (without the RVIZ and DEPTH)
+$ roslaunch realsense2_camera rs_camera.launch color_width:=1280 color_height:=720 (without the RVIZ, DEPTH and tf tree connection between wrist_3_link and camera_link)
 
-# UR5e PLANNING EXECUTION + MOVEIT CONFIG + RVIZ visualization
-$ cd ~/ros_ws/ur_robot_ws
+# UR5e PLANNING EXECUTION + MOVEIT CONFIG + RVIZ visualization + HAND-EYE CALIBRATION plug-in
+$ cd ~/ros_ws/moveit_ws
 $ roslaunch ur5_e_moveit_config ur5_e_planning_moveit_rviz.launch
 >>>>
 
 
 INSTALL Open3D==0.9.0.0 with pip (USE THIS APPRAOCH IN THE JETSON NANO)
+Install python-pip first in the Jetson Nano: 
+$ sudo apt update
+$ sudo apt install python-pip
+$ pip --version
 1. pip install pyrsistent==0.16.1
 2. pip install -U pip setuptools twine
 3. pip install open3d==0.9.0.0

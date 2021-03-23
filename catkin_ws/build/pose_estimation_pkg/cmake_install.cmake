@@ -1,8 +1,8 @@
-# Install script for directory: /home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg
+# Install script for directory: /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,27 +37,22 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set default install directory permissions.
-if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
-endif()
-
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkg.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkg.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pose_estimation_pkg/cmake" TYPE FILE FILES
-    "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig.cmake"
-    "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig-version.cmake"
+    "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig.cmake"
+    "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation_pkgConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pose_estimation_pkg" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pose_estimation_pkg" TYPE FILE FILES "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/package.xml")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pose_estimation_pkg" TYPE PROGRAM FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pose_estimation_pkg" TYPE PROGRAM FILES "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/pose_estimation_pkg/catkin_generated/installspace/pose_estimation.py")
 endif()
 

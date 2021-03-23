@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/src/pcd_visualizer_cad.cpp
+/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/src/pcd_visualizer_cad.cpp
 iostream
 -
 sstream
@@ -916,6 +916,96 @@ vector
 time.h
 -
 
+/usr/include/aarch64-linux-gnu/bits/mman-linux.h
+bits/mman-shared.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/mman-shared.h
+
+/usr/include/aarch64-linux-gnu/bits/mman.h
+bits/mman-linux.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/select.h
+
+/usr/include/aarch64-linux-gnu/bits/select2.h
+
+/usr/include/aarch64-linux-gnu/bits/types.h
+features.h
+-
+bits/wordsize.h
+-
+bits/typesizes.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/types/__sigset_t.h
+
+/usr/include/aarch64-linux-gnu/bits/types/sigset_t.h
+bits/types/__sigset_t.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/types/struct_timespec.h
+bits/types.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/types/struct_timeval.h
+bits/types.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/types/time_t.h
+bits/types.h
+-
+
+/usr/include/aarch64-linux-gnu/bits/typesizes.h
+
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+
+/usr/include/aarch64-linux-gnu/sys/mman.h
+features.h
+-
+bits/types.h
+-
+stddef.h
+-
+bits/mman.h
+-
+
+/usr/include/aarch64-linux-gnu/sys/select.h
+features.h
+-
+bits/types.h
+-
+bits/select.h
+-
+bits/types/sigset_t.h
+-
+bits/types/time_t.h
+-
+bits/types/struct_timeval.h
+-
+bits/types/struct_timespec.h
+-
+bits/select2.h
+-
+
+/usr/include/aarch64-linux-gnu/sys/time.h
+features.h
+-
+bits/types.h
+-
+bits/types/time_t.h
+-
+bits/types/struct_timeval.h
+-
+sys/select.h
+-
+
+/usr/include/aarch64-linux-gnu/sys/timeb.h
+features.h
+-
+bits/types/time_t.h
+-
+
 /usr/include/eigen3/Eigen/Cholesky
 Core
 /usr/include/eigen3/Eigen/Core
@@ -1806,27 +1896,41 @@ cstdint
 
 /usr/include/eigen3/Eigen/src/Core/util/XprHelper.h
 
+/usr/include/eigen3/Eigen/src/Eigenvalues/./ComplexSchur.h
+./HessenbergDecomposition.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/././HessenbergDecomposition.h
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/./RealSchur.h
+./HessenbergDecomposition.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/././HessenbergDecomposition.h
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/./Tridiagonalization.h
+
 /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h
 ./ComplexSchur.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./ComplexSchur.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h
 ./HessenbergDecomposition.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/EigenSolver.h
 ./RealSchur.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./RealSchur.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
 ./RealQZ.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h
 ./Tridiagonalization.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./Tridiagonalization.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
 
@@ -1836,13 +1940,13 @@ cstdint
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h
 ./HessenbergDecomposition.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h
 ./Tridiagonalization.h
-/usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h
+/usr/include/eigen3/Eigen/src/Eigenvalues/./Tridiagonalization.h
 
 /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
 

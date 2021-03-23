@@ -1,8 +1,8 @@
-# Install script for directory: /home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/aruco_pkg
+# Install script for directory: /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/aruco_pkg
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,23 +37,18 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set default install directory permissions.
-if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
-endif()
-
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkg.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkg.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/aruco_pkg/cmake" TYPE FILE FILES
-    "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkgConfig.cmake"
-    "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkgConfig-version.cmake"
+    "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkgConfig.cmake"
+    "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build/aruco_pkg/catkin_generated/installspace/aruco_pkgConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/aruco_pkg" TYPE FILE FILES "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/aruco_pkg/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/aruco_pkg" TYPE FILE FILES "/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src/aruco_pkg/package.xml")
 endif()
 
