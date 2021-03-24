@@ -1,9 +1,0 @@
-# CMake generated Testfile for 
-# Source directory: /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/src
-# Build directory: /home/ccdn/git/3DVisionMobileManipulation/catkin_ws/build
-# 
-# This file includes the relevant testing commands required for 
-# testing this directory and lists subdirectories to be tested as well.
-subdirs("gtest")
-subdirs("aruco_pkg")
-subdirs("pose_estimation_pkg")
