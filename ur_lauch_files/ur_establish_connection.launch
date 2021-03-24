@@ -8,4 +8,3 @@
         <arg name="kinematics_config" value="$(arg kinematics_config)"/>
     </include>
 </launch>
-

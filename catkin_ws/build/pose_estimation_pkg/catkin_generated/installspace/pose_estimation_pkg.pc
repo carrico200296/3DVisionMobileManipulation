@@ -1,8 +1,0 @@
-prefix=/home/ccdn/git/3DVisionMobileManipulation/catkin_ws/install
-
-Name: pose_estimation_pkg
-Description: Description of pose_estimation_pkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

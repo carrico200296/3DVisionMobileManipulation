@@ -1,0 +1,6 @@
+<launch>
+    <!-- Calculation done in tf_transformations.py script-->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="ur_camera_broadcaster"
+    args="-0.01900175 -0.0842239 0.01904847 0.49694298 -0.50709689  0.49515566  0.50072077 wrist_3_link camera_link" />
+
+</launch>
