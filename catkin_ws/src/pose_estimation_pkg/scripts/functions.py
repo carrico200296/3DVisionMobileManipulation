@@ -1,21 +1,33 @@
 #! /usr/bin/env python
 
 import numpy as np
-import open3d.open3d as o3d
+import open3d as o3d
 import matplotlib.pyplot as plt
 from sklearn import cluster
 import sklearn
 import copy
 import time
 
+def threshold_filter_in_axis(cloud, distance, axis, keep_points_outside_threshold = False, display=False):
+
+    print(":: Perform Threshold Filter in Axis: %d" %axis)
+    pcd_temp = copy.deepcopy(cloud)
+    points = np.asarray(pcd_temp.points)
+    threshold_mask = np.where(abs(points[:, axis]) < distance)[0]
+    pcd = pcd_temp.select_down_sample(list(threshold_mask), invert=keep_points_outside_threshold)
+
+    if (display == True):
+        o3d.visualization.draw_geometries([pcd])
+
+    return pcd
+
 def threshold_filter_x_y(cloud, distance=0.01, display=False):
 
-    print(":: Perform Threshold X Filter")
+    print(":: Perform Threshold X and Y Filter")
     pcd_temp = copy.deepcopy(cloud)
     points = np.asarray(pcd_temp.points)
     threshold_mask_x = np.where(abs(points[:, 0]) > distance)[0]
     threshold_mask_y = np.where(abs(points[:, 1]) > distance)[0]
-    print("   Point Cloud after Threshold X Filter = %d points" % (len(threshold_mask_x) + len(threshold_mask_y)))
     pcd_x = pcd_temp.select_down_sample(list(threshold_mask_x))
     pcd_y = pcd_temp.select_down_sample(list(threshold_mask_y))
     pcd = pcd_x + pcd_y
@@ -129,14 +141,12 @@ def downsample_point_cloud(cloud, voxel_size):
 def draw_registration_result(source, target, transformation):
     source_temp = copy.deepcopy(source)
     target_temp = copy.deepcopy(target)
-    # print(f'Center of source before transformation: {source_temp.get_center()}')
-    # print(f'Center of target before transformation: {target_temp.get_center()}')
-    # Card model in yellow
-    #source_temp.paint_uniform_color([1, 0.706, 0])
+    # Card model in gray
     source_temp.paint_uniform_color([0.7, 0.7, 0.7])
 
     source_temp.transform(transformation)
-    frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1, origin=source_temp.get_center())
+    frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
+    frame_source.transform(transformation)
     frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
 
     o3d.visualization.draw_geometries([source_temp, target_temp, frame_source, frame_origin])

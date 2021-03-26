@@ -84,7 +84,7 @@ $ roslaunch ur5_e_moveit_config ur5_e_planning_moveit_rviz.launch
 >>>>
 
 
-INSTALL Open3D==0.9.0.0 with pip (USE THIS APPRAOCH IN THE JETSON NANO)
+INSTALL Open3D==0.9.0.0 with pip (USE THIS APPRAOCH IN UBUNTU LAPTOP)
 Install python-pip first in the Jetson Nano: 
 $ sudo apt update
 $ sudo apt install python-pip
@@ -94,7 +94,27 @@ $ pip --version
 3. pip install open3d==0.9.0.0
 4. sudo apt-get install ros-melodic-ros-numpy
 5. pip install open3d-ros-helper (version installed 0.2.0.2)
-6. pip install scikit-learn (version installed 0.20.4)
+6. pip install scikit-learn (version installed 0.20.4) (not used)
+
+IN JETSON NANO is different because $ uname -p -> outputs: aarch64
+INSTALL open3d 0.9.0.0 using this link http://www.open3d.org/docs/release/arm.html (USE THIS APPROACH IN JETSON NANO)
+Differences:
+not run: sudo apt-get install -y python3 python3-dev python3-pip
+git clone -b v0.9.0 https://github.com/intel-isl/Open3D.git
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_CUDA_MODULE=ON \
+    -DBUILD_GUI=ON \
+    -DBUILD_TENSORFLOW_OPS=OFF \
+    -DBUILD_PYTORCH_OPS=OFF \
+    -DBUILD_UNIT_TESTS=ON \
+    -DCMAKE_INSTALL_PREFIX=~/open3d_install \
+    -DPYTHON_EXECUTABLE=$(which python) \
+    ..
+not run: make install
+4. sudo apt-get install ros-melodic-ros-numpy
+5. pip install open3d-ros-helper (version installed 0.2.0.2)
 
 
 PACKAGES INSTALLED in laptop to use tf and do transformation:
@@ -191,6 +211,21 @@ installed:
 -- Installing: /usr/local/lib/cmake/Open3D/Open3DConfig.cmake
 -- Installing: /usr/local/lib/cmake/Open3D/Open3DConfigVersion.cmake
 (NOT WORKING WITH ROS)
+
+(JETSON NANO $ uname -p -> outputs: aarch64
+INSTALL open3d 0.9.0.0 using this link http://www.open3d.org/docs/release/arm.html
+git clone -b v0.9.0 https://github.com/intel-isl/Open3D.git
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_CUDA_MODULE=ON \
+    -DBUILD_GUI=ON \
+    -DBUILD_TENSORFLOW_OPS=OFF \
+    -DBUILD_PYTORCH_OPS=OFF \
+    -DBUILD_UNIT_TESTS=ON \
+    -DCMAKE_INSTALL_PREFIX=~/open3d_install \
+    -DPYTHON_EXECUTABLE=$(which python) \
+    ..
 
 
 Compile a C++ project using Open3D:

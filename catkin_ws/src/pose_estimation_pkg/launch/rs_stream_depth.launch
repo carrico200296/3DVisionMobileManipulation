@@ -1,5 +1,5 @@
 <launch>
-    <param name="/use_sim_time" value="true"/>
+    <param name="/use_sim_time" value="false"/>
     <arg name="color_width" default="1280"/>
     <arg name="color_height" default="720"/>
     <arg name="filters" default="pointcloud"/>

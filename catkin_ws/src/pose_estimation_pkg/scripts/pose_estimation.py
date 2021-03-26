@@ -47,45 +47,43 @@ if __name__ == "__main__":
     rospy.init_node('pose_estimation_tf2_broadcaster')
     broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-    #while not rospy.is_shutdown():
-
-    data = rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2)
-    scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
-
-    print(":: Load two point clouds.")
+    print(":: Load cad_model and the scene point clouds.")
     cad_model = o3d.io.read_point_cloud(sys.argv[1], print_progress=True)
-    #o3d.visualization.draw_geometries([cad_model])
-    cad_model_without_middle = threshold_filter_x_y(cloud=cad_model, distance=0.015/2, display=False)
+    cad_model_without_middle = threshold_filter_x_y(cloud=cad_model, distance=0.015/2, display=True)
     #cad_model_without_middle.translate(translation=(0, 0, 0), relative=False)
     
-    o3d.visualization.draw_geometries([scene_pcd])
+    print("   Waiting for a scene reconstructed point cloud.")
+    data = rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2)
+    #data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2)
+    scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
+    #scene_pcd.voxel_down_sample(voxel_size=0.5)
+
     print("   Cad model has " + str(len(cad_model_without_middle.points)) + " points")
     #scene_pcd = o3d.io.read_point_cloud(sys.argv[2], print_progress=True)
     print("   Scene Point Cloud has " + str(len(scene_pcd.points)) + " points")
 
     ## Parameters for each component
     # default values
-    z_distance = 0.49
-    distance_threshold = 0.007
-    voxel_size = 0.5
+    z_distance = 0.53
+    x_distance = 0.2
+    y_distance = 0.15
+    distance_threshold = 0.0009
+    voxel_size = 1.0
 
     if (sys.argv[3] == "m200"):
-        z_distance = 0.49
-        distance_threshold = 0.01
-        voxel_size = 1
+        voxel_size = 1.0
 
     if (sys.argv[3] == "m300"):
-        z_distance = 0.5
-        distance_threshold = 0.002
         voxel_size = 0.01
 
     start_preprocess_cluster = time.time()
-    # Threshold data with Z filter
-    scene_pcd = threshold_filter_z(cloud=scene_pcd, z_distance=z_distance, display=True)
-    # Segment the plane with RANSAC
-    _, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=True)
+    scene_pcd = threshold_filter_z(cloud=scene_pcd, z_distance=z_distance, display=False)
+    scene_pcd = threshold_filter_in_axis(scene_pcd, distance=x_distance, axis=0 ,keep_points_outside_threshold=False)
+    scene_pcd = threshold_filter_in_axis(scene_pcd, distance=y_distance, axis=1 ,keep_points_outside_threshold=False, display=True)
+    _, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
+    
     # DBSCAN Clustering
-    scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.01, min_samples=400, min_points_cluster = 3000, display=False)
+    scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.01, min_samples=400, min_points_cluster = 4000, display=False)
     end_preprocess_cluster = time.time()
 
     print(":: Final Scene Clusters to register:")
@@ -112,7 +110,7 @@ if __name__ == "__main__":
                                                                 source_fpfh=source_down_fpfh,
                                                                 target_fpfh=target_down_fpfh, 
                                                                 voxel_size=voxel_size)
-        draw_registration_result(source, target, result_ransac.transformation)
+        #draw_registration_result(source, target, result_ransac.transformation)
         '''
         # The Global Registration worked better and slower than the Fast Registration
         result_ransac, time_ransac = execute_fast_global_registration(source_down,
@@ -158,7 +156,7 @@ if __name__ == "__main__":
         frame_name = "object_frame_" + str(i)
         broadcaster_component_frame(broadcaster,frame_name, np.asarray(result_icp.transformation))
 
-    o3d.visualization.draw_geometries(scene_pcd_clustered)
-
+    #o3d.visualization.draw_geometries(scene_pcd_clustered)
+    quit()
     rospy.spin()
     print("DONE")
