@@ -18,33 +18,6 @@ from functions import *
 import rtde_control
 import rtde_receive
 
-def broadcaster_scene_view_frame(broadcaster, scene_view_frame, transformation):
-
-    static_transformStamped = geometry_msgs.msg.TransformStamped()
-    transformation.header.stamp = rospy.Time.now()
-    transformation.child_frame_id = scene_view_frame
-
-    broadcaster.sendTransform(transformation)
-
-def transform_pcd_from_tf_transformation(pcd, tf_transform):
-
-    q = [0.0, 0.0, 0.0, 0.0]
-    q[0] = tf_transform.transform.rotation.x
-    q[1] = tf_transform.transform.rotation.y
-    q[2] = tf_transform.transform.rotation.z
-    q[3] = tf_transform.transform.rotation.w
-    rot_mat = tf.transformations.quaternion_matrix(q)
-    trans = [0.0, 0.0, 0.0]
-    trans[0] = tf_transform.transform.translation.x
-    trans[1] = tf_transform.transform.translation.y
-    trans[2] = tf_transform.transform.translation.z
-
-    T = np.eye(4)
-    T[:3, :3] = rot_mat[:3, :3]
-    T[:3,3] = trans
-
-    return pcd.transform(T)
-
 if __name__ == "__main__":
  
     rospy.init_node('scene_reconstruction')
@@ -79,51 +52,50 @@ if __name__ == "__main__":
     for i in range(nb_views):
         view_frames.append("view" + str(i) + "_frame")
         rtde_c.moveL(pose[i], 0.2, 0.3)
-        time.sleep(2)
+        time.sleep(1.5)
+        #scen_pcd = orh.rospc_to_o3dpc(rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2), remove_nans=True)
+        #scene_pcd = get_pcd_roi(scen_pcd, i, tfBuffer)
+        #scene_view.append(scen_pcd)
+        #o3d.visualization.draw_geometries([scen_pcd])
         scene_view.append(orh.rospc_to_o3dpc(rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2), remove_nans=True))
         tf_transform_base_view = tfBuffer.lookup_transform(base_frame, depth_frame, rospy.Time())
         broadcaster_scene_view_frame(broadcaster, view_frames[i], tf_transform_base_view)
+        o3d.io.write_point_cloud("scene_view" + str(i) + ".pcd", filter_pcd(scene_view[i]))
         print("   View %d recorded" % i)
 
     rtde_c.moveL(pose[0], 0.2, 0.3)
     rtde_c.stopScript()
 
     print(":: Concatenating point clouds.")
+    distance_threshold = 0.000009
+    scene_view[0] = filter_pcd(scene_view[0])
     scene_reconstructed = scene_view[0]
+    _, scene_view[0] = segment_plane_ransac(cloud=scene_view[0], distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
+    scene_reconstructed_ICP = scene_view[0]
+
     for j in range(nb_views-1):
+        print("--------------------------------------------")
         tf_transform_view_to_view0 = tfBuffer.lookup_transform(view_frames[0], view_frames[j+1], rospy.Time())
-        scene_view[j+1] = transform_pcd_from_tf_transformation(scene_view[j+1], tf_transform_view_to_view0)
-        scene_reconstructed = scene_reconstructed + scene_view[j+1]
+        scene_view[j+1] = filter_pcd(scene_view[j+1])
+        pcd_view = copy.deepcopy(scene_view[j+1])
+        _, scene_view[j+1] = segment_plane_ransac(cloud=scene_view[j+1], distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
+        scene_view[j+1], pcd_view = tf_transform_pcd_ICP(scene_view[j+1],
+                                                scene_view[0],
+                                                tf_transform_view_to_view0, pcd_view)
+        scene_reconstructed = scene_reconstructed + pcd_view
+        scene_reconstructed_ICP = scene_reconstructed_ICP + scene_view[j+1]
 
-    ## THRESHOLDING PARAMETERS
-    # default values (they should be the same because all the view will be refer to the same position)
-    ## IDEA: make the region of interest depending on the ARUCO codes
-    # roi = rospy.wait_for_message("/aruco/detected_roi", np.array()) we can get the ROI in the 3D space from the topic /aruco/detected_roi
-    # then we use this roi to threshold the scene
-    z_distance = 0.53
-    x_distance = 0.2
-    y_distance = 0.15
-    distance_threshold = 0.0009
+    print("Scene Reconstructed no ICP")
+    o3d.io.write_point_cloud("scene_reconstructed_m200.pcd", scene_reconstructed)
+    o3d.visualization.draw_geometries([scene_reconstructed])
+    print("Scene Reconstructed with ICP")
+    o3d.io.write_point_cloud("scene_reconstructed_ICP_m200.pcd", scene_reconstructed_ICP)
+    o3d.visualization.draw_geometries([scene_reconstructed_ICP])
 
-    scene_pcd = threshold_filter_z(scene_reconstructed, z_distance=z_distance)
-    scene_pcd = threshold_filter_in_axis(scene_pcd, distance=x_distance, axis=0 ,keep_points_outside_threshold=False)
-    scene_pcd = threshold_filter_in_axis(scene_pcd, distance=y_distance, axis=1 ,keep_points_outside_threshold=False, display=True)
-    _, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=True)
-
-    o3d.visualization.draw_geometries([scene_pcd])
-    scene_pcd_pointcloud2 = orh.o3dpc_to_rospc(scene_pcd)
-    scene_pcd_pointcloud2.header.frame_id = "camera_depth_optical_frame"
+    scene_pcd = copy.deepcopy(scene_reconstructed_ICP)
+    scene_pcd_pointcloud2 = orh.o3dpc_to_rospc(scene_pcd, frame_id="camera_depth_optical_frame", stamp=rospy.Time.now())
+    pub.publish(scene_pcd_pointcloud2)
     print("Reconstruction DONE! Scene_reconstructed published.")
 
-    scene_pcd_pointcloud2.header.stamp = rospy.Time.now()
-    pub.publish(scene_pcd_pointcloud2)
     rospy.sleep(2.0)
-
     quit()
-
-    '''
-    while not rospy.is_shutdown():
-        scene_pcd_pointcloud2.header.stamp = rospy.Time.now()
-        pub.publish(scene_pcd_pointcloud2)
-        rospy.sleep(1.0)
-    '''

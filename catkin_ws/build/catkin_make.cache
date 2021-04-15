@@ -1,0 +1,2 @@
+aruco_pkg:pose_estimation_pkg
+-DCATKIN_DEVEL_PREFIX=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/install -G Unix Makefiles
