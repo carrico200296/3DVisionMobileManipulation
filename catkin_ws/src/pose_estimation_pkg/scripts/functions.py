@@ -7,10 +7,12 @@ from sklearn import cluster
 import sklearn
 import copy
 import time
+import math
 
 import rospy
 from open3d_ros_helper import open3d_ros_helper as orh
 import cv2
+from cv2 import aruco
 import sys
 import tf
 import tf2_ros
@@ -28,26 +30,6 @@ def display_inlier_outlier(cloud, ind):
     outlier_cloud.paint_uniform_color([1, 0, 0])
 
     o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud])
-
-def remove_color_outlier(cloud, color_threshold=150):
-    # Funtion to remove all the points with R,G and B color value < than a color_threshold
-
-    print(":: Perform Threshold Color Filter")
-    pcd_temp = copy.deepcopy(cloud)
-    colors = np.asarray(pcd_temp.colors)
-    threshold_mask0 = colors[:, 0]*255 < color_threshold
-    threshold_mask1 = colors[:, 1]*255 < color_threshold
-    threshold_mask2 = colors[:, 2]*255 < color_threshold
-    threshold_mask01 = np.logical_and(threshold_mask0, threshold_mask1)
-    threshold_mask = np.logical_and(threshold_mask01, threshold_mask2)
-
-    inliers = []
-    for i,item_mask in enumerate(threshold_mask):
-        if item_mask==False:
-            inliers.append(i)
-    pcd = pcd_temp.select_down_sample(inliers)
-
-    return pcd, inliers
 
 def threshold_filter_in_axis(cloud, distance, axis, keep_points_outside_threshold = False, display=False):
 
@@ -114,41 +96,100 @@ def threshold_filter_circle(cloud, radius=0.01, display=False):
     pcd = pcd_temp.select_down_sample(list(threshold_mask), invert=True)
 
     if (display == True):
-        frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05, origin=pcd.get_center())
-        frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
-        o3d.visualization.draw_geometries([pcd, frame_source, frame_origin])
+        o3d.visualization.draw_geometries([pcd])
 
     return pcd
+
+def threshold_filter_color(cloud, color_threshold=150):
+    # Funtion to remove all the points with R,G and B color value < than a color_threshold
+
+    print(":: Perform Threshold Color Filter")
+    pcd_temp = copy.deepcopy(cloud)
+    colors = np.asarray(pcd_temp.colors)
+    threshold_mask0 = colors[:, 0]*255 < color_threshold
+    threshold_mask1 = colors[:, 1]*255 < color_threshold
+    threshold_mask2 = colors[:, 2]*255 < color_threshold
+    threshold_mask01 = np.logical_and(threshold_mask0, threshold_mask1)
+    threshold_mask = np.logical_and(threshold_mask01, threshold_mask2)
+
+    inliers = []
+    for i,item_mask in enumerate(threshold_mask):
+        if item_mask==False:
+            inliers.append(i)
+    pcd = pcd_temp.select_down_sample(inliers)
+
+    return pcd, inliers
 
 
 
 # FUNCTIONS FOR RANSAC PLANE SEGMENTATION AND DBSCAN CLUSTERING OBJECTS --------------------------------------------------
-
-def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterations=100, display=False):
-
-    print(":: Perform RANSAC Plane Segmentation")
-    pcd_temp = copy.deepcopy(cloud)
-    plane_model, inliers_plane = pcd_temp.segment_plane(distance_threshold=0.01, ransac_n=3, num_iterations=100)
-    [a, b, c, d] = plane_model
-    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
-    plane_cloud, pcd = remove_outliers(cloud=pcd_temp, outliers=inliers_plane, display=display)
-    print("   Point Cloud after RANSAC plane segmentation = " + str(len(pcd.points)) + " points")
-
-    return plane_cloud, pcd
 
 def remove_outliers(cloud, outliers, display=False):
     # INPUTS:
     # - cloud:: open3d.geometry.PointCloud
     # - outlier:: List[int] of outliers to display
 
-    outlier_cloud = cloud.select_down_sample(outliers)
+    outlier_pcd = cloud.select_down_sample(outliers)
     pcd = cloud.select_down_sample(outliers, invert=True)
-    outlier_cloud.paint_uniform_color([1, 0, 0])
+    outlier_pcd.paint_uniform_color([1, 0, 0])
 
     if (display == True):
-        o3d.visualization.draw_geometries([outlier_cloud, pcd])
+        o3d.visualization.draw_geometries([outlier_pcd, pcd])
 
-    return outlier_cloud, pcd
+    return outlier_pcd, pcd
+
+def equation_plane(x1, y1, z1, x2, y2, z2, x3, y3, z3): 
+    # Function to find equation of plane passing through given 3 points.
+    a1 = x2 - x1
+    b1 = y2 - y1
+    c1 = z2 - z1
+    a2 = x3 - x1
+    b2 = y3 - y1
+    c2 = z3 - z1
+    a = b1 * c2 - b2 * c1
+    b = a2 * c1 - a1 * c2
+    c = a1 * b2 - b1 * a2
+    d = (- a * x1 - b * y1 - c * z1)
+    return a, b, c, d
+
+def distance_point2plane(x1, y1, z1, a, b, c, d): 
+    # Function to find distance perpendicular distance (shortest) between a point and a Plane in 3D.
+    d = abs((a * x1 + b * y1 + c * z1 + d)) 
+    e = (math.sqrt(a * a + b * b + c * c))
+    distance = d/e
+    return distance
+
+def segment_plane_3points(cloud, points_samples, distance_threshold, display=False):
+    print(":: Perform Plane Segmentation using 3 points")
+    pcd = copy.deepcopy(cloud)
+    p1, p2, p3 = points_samples
+    x1, y1, z1 = p1
+    x2, y2, z2 = p2
+    x3, y3, z3 = p3
+    a, b, c, d = equation_plane(x1, y1, z1, x2, y2, z2, x3, y3, z3)
+    xyz = np.asarray(pcd.points)
+    inliers_plane = [] # outliers for the cloud
+    for i,point in enumerate(xyz):
+        distance = distance_point2plane(point[0], point[1], point[2], a, b, c, d)
+        if distance < distance_threshold:
+            inliers_plane.append(i)
+    
+    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
+    plane_pcd, pcd = remove_outliers(pcd, inliers_plane, display=display)
+    print("   Point Cloud after plane segmentation = %d points" % len(pcd.points))
+
+    return plane_pcd, pcd
+
+def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterations=100, display=False):
+    print(":: Perform RANSAC Plane Segmentation")
+    pcd = copy.deepcopy(cloud)
+    plane_model, inliers_plane = pcd.segment_plane(distance_threshold=distance_threshold, ransac_n=ransac_n, num_iterations=num_iterations)
+    [a, b, c, d] = plane_model
+    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
+    plane_pcd, pcd = remove_outliers(cloud=pcd, outliers=inliers_plane, display=display)
+    print("   Point Cloud after RANSAC plane segmentation = %d points" % len(pcd.points))
+
+    return plane_pcd, pcd
 
 def cluster_dbscan(cloud, eps=0.01, min_samples=400, min_points_cluster=4000, display=False):
 
@@ -365,6 +406,34 @@ def execute_local_registration(source, target, result_ransac, voxel_size):
 
 # FUNCTIONS FOR TF TRANSFORMATIONS
 
+def broadcaster_aruco_color_frame(broadcaster, rvecs, tvecs, aruco_frame_name):
+    transformStamped = geometry_msgs.msg.TransformStamped()
+
+    transformStamped.header.stamp = rospy.Time.now()
+    transformStamped.header.frame_id = "camera_color_optical_frame"
+    transformStamped.child_frame_id = aruco_frame_name
+    transformStamped.transform.translation.x = tvecs[0][0]
+    transformStamped.transform.translation.y = tvecs[0][1]
+    transformStamped.transform.translation.z = tvecs[0][2]
+
+    pose_mat = np.eye(4)
+    rot_matrix,_ = cv2.Rodrigues(rvecs)
+    pose_mat[:3, :3] = rot_matrix
+    q = tf.transformations.quaternion_from_matrix(pose_mat)
+    transformStamped.transform.rotation.x = q[0]
+    transformStamped.transform.rotation.y = q[1]
+    transformStamped.transform.rotation.z = q[2]
+    transformStamped.transform.rotation.w = q[3]
+
+    broadcaster.sendTransform(transformStamped)
+
+def broadcaster_aruco_depth_frame(broadcaster, transformStamped, aruco_frame_name):
+    transformStamped.header.stamp = rospy.Time.now();
+    transformStamped.header.frame_id = "camera_depth_optical_frame"
+    transformStamped.child_frame_id = aruco_frame_name
+
+    broadcaster.sendTransform(transformStamped)
+
 def broadcaster_component_frame(broadcaster, object_frame_name, t_matrix):
 
     rot_matrix = t_matrix[:3,:3]
@@ -436,48 +505,27 @@ def tf_transform_pcd_ICP(source_pcd, target_pcd, tf_transform, pcd_view):
 
     return source_pcd_IPC, pcd_view
 
-def get_pcd_roi(cloud, pose_nb, tfBuffer):
+
+
+# ARUCO FUNCTIONS
+
+def get_pcd_roi(cloud, tfBuffer):
     scene_pcd = copy.deepcopy(cloud)
     detected_roi = []
     size_aruco = 0.04
     for i in range(4):
         aruco_id_frame = "depth_aruco_id_" + str(i+1)
-        tf_transform = tfBuffer.lookup_transform("camera_depth_optical_frame", aruco_id_frame, rospy.Time(0), rospy.Duration(1.5))
+        tf_transform = tfBuffer.lookup_transform("camera_depth_optical_frame", aruco_id_frame, rospy.Time(0))
         detected_roi.append((tf_transform.transform.translation.x,
                              tf_transform.transform.translation.y,
                              tf_transform.transform.translation.z))
-    print(pose_nb)
-    if pose_nb == 0:
-        x_min = detected_roi[0][0] - size_aruco 
-        x_max = detected_roi[1][0] + size_aruco
-        y_min = detected_roi[0][1] - size_aruco
-        y_max = detected_roi[2][1] + size_aruco
-        z_max = detected_roi[0][2]
-        z_min = z_max - 0.2
-
-    if pose_nb == 1:
-        x_min = detected_roi[1][0] - size_aruco 
-        x_max = detected_roi[3][0] + size_aruco
-        y_min = detected_roi[1][1] - size_aruco
-        y_max = detected_roi[0][1] + size_aruco
-        z_max = detected_roi[1][2]
-        z_min = z_max - 0.2
-
-    if pose_nb == 2:
-        x_min = detected_roi[3][0] - size_aruco 
-        x_max = detected_roi[2][0] + size_aruco
-        y_min = detected_roi[3][1] - size_aruco
-        y_max = detected_roi[1][1] + size_aruco
-        z_max = detected_roi[3][2]
-        z_min = z_max - 0.2
-
-    if pose_nb == 3:
-        x_min = detected_roi[2][0] - size_aruco 
-        x_max = detected_roi[0][0] + size_aruco
-        y_min = detected_roi[2][1] - size_aruco
-        y_max = detected_roi[3][1] + size_aruco
-        z_max = detected_roi[2][2]
-        z_min = z_max - 0.2
+    
+    x_min = detected_roi[0][0] - size_aruco 
+    x_max = detected_roi[1][0] + size_aruco
+    y_min = detected_roi[0][1] - size_aruco
+    y_max = detected_roi[2][1] + size_aruco
+    z_max = detected_roi[0][2]
+    z_min = z_max - 0.2
 
     print("x_min = %.3f" %x_min)
     print("x_max = %.3f" %x_max)
@@ -492,3 +540,50 @@ def get_pcd_roi(cloud, pose_nb, tfBuffer):
 
     return scene_pcd
 
+def detect_aruco_markers(img, display=False):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+    parameters =  aruco.DetectorParameters_create()
+    corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+    img_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
+
+    if display==True:
+        plt.figure()
+        plt.imshow(img_markers)
+        print(ids)
+        if ids is not None:
+            for i in range(len(ids)):
+                c = corners[i][0]
+                plt.plot([c[:, 0].mean()], [c[:, 1].mean()], "o", label = "id={0}".format(ids[i]))
+                #print([c[:, 0].mean()], [c[:, 1].mean()])
+            plt.legend()
+        plt.show()
+
+    return img_markers, corners, ids
+
+def detect_marker_pose(img, corners, ids, camera_type, display=False):
+
+    distCoeffs = np.zeros((5,1))
+    if camera_type == "D415": 
+        camera_mtx = np.array([[931.7362060546875, 0.0, 622.6597900390625],
+                                [0.0, 931.1814575195312, 354.47479248046875],
+                                [0.0, 0.0, 1.0]])
+    if camera_type == "D435":
+        camera_mtx = np.array([[617.0361328125, 0.0, 327.0294189453125],
+                                [0.0, 617.2791137695312, 237.9000701904297],
+                                [0.0, 0.0, 1.0]])
+    size_of_marker =  0.04 # side lenght of the marker in meter
+    length_of_axis = 0.1
+    rvecs,tvecs = aruco.estimatePoseSingleMarkers(corners, size_of_marker, camera_mtx, distCoeffs)
+    img_axis = aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    
+    for i in range(len(tvecs)):
+        img_axis = aruco.drawAxis(img_axis, camera_mtx, distCoeffs, rvecs[i], tvecs[i], length_of_axis)
+
+    if display==True:
+        plt.figure()
+        plt.imshow(img_axis)
+        plt.grid()
+        plt.show()
+
+    return img_axis, rvecs, tvecs

@@ -4,9 +4,9 @@
     <arg name="color_height"     default="720"/>
     <arg name="depth_width"      default="1280"/>
     <arg name="depth_height"     default="720"/>
-    <arg name="align_depth"      default="false"/>
-    <arg name="filters"          default="pointcloud"/>
-    <!--<arg name="filters"          default="colorizer,pointcloud,temporal,decimation"/> -->
+    <arg name="align_depth"      default="true"/>
+    <!--<arg name="filters"          default="pointcloud"/>-->
+    <arg name="filters"          default="colorizer,pointcloud,temporal,decimation"/>
     <arg name="ordered_pc"       default="true"/>
     <!-- colorizer,pointcloud,disparity,spatial,temporal,hole_filling,decimation -->
 

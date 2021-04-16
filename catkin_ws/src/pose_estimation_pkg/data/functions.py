@@ -7,6 +7,7 @@ from sklearn import cluster
 import sklearn
 import copy
 import time
+import math
 
 import rospy
 from open3d_ros_helper import open3d_ros_helper as orh
@@ -28,26 +29,6 @@ def display_inlier_outlier(cloud, ind):
     outlier_cloud.paint_uniform_color([1, 0, 0])
 
     o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud])
-
-def remove_color_outlier(cloud, color_threshold=150):
-    # Funtion to remove all the points with R,G and B color value < than a color_threshold
-
-    print(":: Perform Threshold Color Filter")
-    pcd_temp = copy.deepcopy(cloud)
-    colors = np.asarray(pcd_temp.colors)
-    threshold_mask0 = colors[:, 0]*255 < color_threshold
-    threshold_mask1 = colors[:, 1]*255 < color_threshold
-    threshold_mask2 = colors[:, 2]*255 < color_threshold
-    threshold_mask01 = np.logical_and(threshold_mask0, threshold_mask1)
-    threshold_mask = np.logical_and(threshold_mask01, threshold_mask2)
-
-    inliers = []
-    for i,item_mask in enumerate(threshold_mask):
-        if item_mask==False:
-            inliers.append(i)
-    pcd = pcd_temp.select_down_sample(inliers)
-
-    return pcd, inliers
 
 def threshold_filter_in_axis(cloud, distance, axis, keep_points_outside_threshold = False, display=False):
 
@@ -114,41 +95,100 @@ def threshold_filter_circle(cloud, radius=0.01, display=False):
     pcd = pcd_temp.select_down_sample(list(threshold_mask), invert=True)
 
     if (display == True):
-        frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05, origin=pcd.get_center())
-        frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
-        o3d.visualization.draw_geometries([pcd, frame_source, frame_origin])
+        o3d.visualization.draw_geometries([pcd])
 
     return pcd
+
+def threshold_filter_color(cloud, color_threshold=150):
+    # Funtion to remove all the points with R,G and B color value < than a color_threshold
+
+    print(":: Perform Threshold Color Filter")
+    pcd_temp = copy.deepcopy(cloud)
+    colors = np.asarray(pcd_temp.colors)
+    threshold_mask0 = colors[:, 0]*255 < color_threshold
+    threshold_mask1 = colors[:, 1]*255 < color_threshold
+    threshold_mask2 = colors[:, 2]*255 < color_threshold
+    threshold_mask01 = np.logical_and(threshold_mask0, threshold_mask1)
+    threshold_mask = np.logical_and(threshold_mask01, threshold_mask2)
+
+    inliers = []
+    for i,item_mask in enumerate(threshold_mask):
+        if item_mask==False:
+            inliers.append(i)
+    pcd = pcd_temp.select_down_sample(inliers)
+
+    return pcd, inliers
 
 
 
 # FUNCTIONS FOR RANSAC PLANE SEGMENTATION AND DBSCAN CLUSTERING OBJECTS --------------------------------------------------
-
-def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterations=100, display=False):
-
-    print(":: Perform RANSAC Plane Segmentation")
-    pcd_temp = copy.deepcopy(cloud)
-    plane_model, inliers_plane = pcd_temp.segment_plane(distance_threshold=0.01, ransac_n=3, num_iterations=100)
-    [a, b, c, d] = plane_model
-    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
-    plane_cloud, pcd = remove_outliers(cloud=pcd_temp, outliers=inliers_plane, display=display)
-    print("   Point Cloud after RANSAC plane segmentation = " + str(len(pcd.points)) + " points")
-
-    return plane_cloud, pcd
 
 def remove_outliers(cloud, outliers, display=False):
     # INPUTS:
     # - cloud:: open3d.geometry.PointCloud
     # - outlier:: List[int] of outliers to display
 
-    outlier_cloud = cloud.select_down_sample(outliers)
+    outlier_pcd = cloud.select_down_sample(outliers)
     pcd = cloud.select_down_sample(outliers, invert=True)
-    outlier_cloud.paint_uniform_color([1, 0, 0])
+    outlier_pcd.paint_uniform_color([1, 0, 0])
 
     if (display == True):
-        o3d.visualization.draw_geometries([outlier_cloud, pcd])
+        o3d.visualization.draw_geometries([outlier_pcd, pcd])
 
-    return outlier_cloud, pcd
+    return outlier_pcd, pcd
+
+def equation_plane(x1, y1, z1, x2, y2, z2, x3, y3, z3): 
+    # Function to find equation of plane passing through given 3 points.
+    a1 = x2 - x1
+    b1 = y2 - y1
+    c1 = z2 - z1
+    a2 = x3 - x1
+    b2 = y3 - y1
+    c2 = z3 - z1
+    a = b1 * c2 - b2 * c1
+    b = a2 * c1 - a1 * c2
+    c = a1 * b2 - b1 * a2
+    d = (- a * x1 - b * y1 - c * z1)
+    return a, b, c, d
+
+def distance_point2plane(x1, y1, z1, a, b, c, d): 
+    # Function to find distance perpendicular distance (shortest) between a point and a Plane in 3D.
+    d = abs((a * x1 + b * y1 + c * z1 + d)) 
+    e = (math.sqrt(a * a + b * b + c * c))
+    distance = d/e
+    return distance
+
+def segment_plane_3points(cloud, points_samples, distance_threshold, display=False):
+    print(":: Perform Plane Segmentation using 3 points")
+    pcd = copy.deepcopy(cloud)
+    p1, p2, p3 = points_samples
+    x1, y1, z1 = p1
+    x2, y2, z2 = p2
+    x3, y3, z3 = p3
+    a, b, c, d = equation_plane(x1, y1, z1, x2, y2, z2, x3, y3, z3)
+    xyz = np.asarray(pcd.points)
+    inliers_plane = [] # outliers for the cloud
+    for i,point in enumerate(xyz):
+        distance = distance_point2plane(point[0], point[1], point[2], a, b, c, d)
+        if distance < distance_threshold:
+            inliers_plane.append(i)
+    
+    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
+    plane_pcd, pcd = remove_outliers(pcd, inliers_plane, display=display)
+    print("   Point Cloud after plane segmentation = %d points" % len(pcd.points))
+
+    return plane_pcd, pcd
+
+def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterations=100, display=False):
+    print(":: Perform RANSAC Plane Segmentation")
+    pcd = copy.deepcopy(cloud)
+    plane_model, inliers_plane = pcd.segment_plane(distance_threshold=distance_threshold, ransac_n=ransac_n, num_iterations=num_iterations)
+    [a, b, c, d] = plane_model
+    print("   Plane Equation %.2fx + %.2fy + %.2fz + %.2f = 0" % (a, b, c, d))
+    plane_pcd, pcd = remove_outliers(cloud=pcd, outliers=inliers_plane, display=display)
+    print("   Point Cloud after RANSAC plane segmentation = %d points" % len(pcd.points))
+
+    return plane_pcd, pcd
 
 def cluster_dbscan(cloud, eps=0.01, min_samples=400, min_points_cluster=4000, display=False):
 
@@ -218,18 +258,18 @@ def preprocess_source_pcd(source, voxel_size, scale_factor = 1.0/1000):
     # Scale and downsample is already done when we load the model
     #source.scale(scale=scale_factor, center=True)
 
-    #voxel_down = 0.0008
-    distances = pcd.compute_nearest_neighbor_distance()
+    source = copy.deepcopy(source)
+    source_down = copy.deepcopy(source)
+    distances = source_down.compute_nearest_neighbor_distance()
     avg_dist = np.mean(distances)
-    voxel_down = avg_dist
+    voxel_down = avg_dist * 1.2
     print("   Downsampling with voxel_down %.3f." % voxel_down)
-    source_down = source.voxel_down_sample(voxel_down)
-    #source_down = copy.deepcopy(source)
+    source_down = source_down.voxel_down_sample(voxel_down)
 
     radius_normal = voxel_size * 2
     print("   Estimate normals with search radius %.3f." % radius_normal)
-    source.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
-    source_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
+    source.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
+    source_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
 
     radius_feature = voxel_size * 5
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)
@@ -242,19 +282,17 @@ def preprocess_point_cloud(cloud, voxel_size):
 
     print(":: Preprocess target point cloud")
     pcd = copy.deepcopy(cloud)
-
-    #voxel_down = 0.0008
-    distances = pcd.compute_nearest_neighbor_distance()
+    pcd_down = copy.deepcopy(cloud)
+    distances = pcd_down.compute_nearest_neighbor_distance()
     avg_dist = np.mean(distances)
-    voxel_down = avg_dist
+    voxel_down = avg_dist * 2.5
     print("   Downsample with a voxel_down size %.3f." % voxel_down)
-    pcd_down = pcd.voxel_down_sample(voxel_down)
-    #pcd_down = copy.deepcopy(cloud)
+    pcd_down = pcd_down.voxel_down_sample(voxel_down)
 
     radius_normal = voxel_size * 2
     print("   Estimate normals with search radius %.3f." % radius_normal)
-    pcd.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
-    pcd_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
+    pcd.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
+    pcd_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     
     radius_feature = voxel_size * 5
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)

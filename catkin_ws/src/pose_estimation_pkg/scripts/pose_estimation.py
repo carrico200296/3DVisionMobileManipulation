@@ -18,38 +18,30 @@ from functions import *
 
 if __name__ == "__main__":
 
-    ### IDEA: rospy.wait_for_service() when the node receive a service it will perform the components pose_estimation
     scene_pcd = o3d.geometry.PointCloud()
     rospy.init_node('pose_estimation_tf2_broadcaster')
     broadcaster = tf2_ros.StaticTransformBroadcaster()
 
     print(":: Loading cad_model point cloud.")
-    cad_model = o3d.io.read_point_cloud(sys.argv[1], print_progress=True)
-    cad_model.translate(translation=(0, 0, 0), relative=False)
-    cad_model = threshold_filter_circle(cloud=cad_model, radius=0.01, display=False)
+    cad_model_pcd = o3d.io.read_point_cloud(sys.argv[1], print_progress=True)
+    cad_model_pcd.translate(translation=(0, 0, 0), relative=False)
+    cad_model_pcd = threshold_filter_circle(cloud=cad_model_pcd, radius=0.01, display=True)
 
     print(" :: Loading scene reconstructed point cloud.")
     #scene_pcd = o3d.io.read_point_cloud(sys.argv[2], print_progress=True)
     #data = rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2)
     data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2)
     scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
-    print("   Cad model has %d points" %(len(cad_model.points)) )
+    print("   Cad model has %d points" %(len(cad_model_pcd.points)) )
     print("   Scene Point Cloud has %d points" %(len(scene_pcd.points)) )
 
-    ## Parameters
-    # default values
+    ## Parameters (default values)
     z_distance = 0.53
     x_distance = 0.2
     y_distance = 0.15
     distance_threshold = 0.00009
-    voxel_size = 0.75
+    voxel_size = 0.75 # works for m200
 
-    '''
-    if (sys.argv[3] == "m200"):
-        voxel_size = 1.0
-    if (sys.argv[3] == "m300"):
-        voxel_size = 0.01
-    '''
     start_preprocess_cluster = time.time()
     #scene_pcd = filter_pcd(scene_pcd, x_distance=x_distance, y_distance=y_distance, z_distance=z_distance)
     #_, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
@@ -57,14 +49,12 @@ if __name__ == "__main__":
     scene_pcd = threshold_filter_min_max(scene_pcd, axis=1, min_distance=-0.15, max_distance=0.15)
     scene_pcd = threshold_filter_min_max(scene_pcd, axis=2, min_distance=0.3, max_distance=0.53)
     #plane, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
-    scene_pcd, inliers = remove_color_outlier(cloud=scene_pcd, color_threshold=200)
+    scene_pcd, inliers = threshold_filter_color(cloud=scene_pcd, color_threshold=200)
 
     # DBSCAN Clustering
-    # dbscan values for reconstructed
+    # dbscan values for more density
+    #scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.01, min_samples=400, min_points_cluster = 4000, display=False)
     scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.01, min_samples=100, min_points_cluster = 1000, display=False)
-    
-    #dbscan values for single view
-    #scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.01, min_samples=100, min_points_cluster = 1000, display=False)
     end_preprocess_cluster = time.time()
     print(":: Final Scene Clusters to register:")
     for cluster in range(nb_clusters):
@@ -76,7 +66,7 @@ if __name__ == "__main__":
     o3d.visualization.draw_geometries(scene_pcd_clustered)
 
     # Global + Local Registration
-    source, source_down, source_fpfh, source_down_fpfh = preprocess_source_pcd(source=cad_model, voxel_size=voxel_size)
+    source, source_down, source_fpfh, source_down_fpfh = preprocess_source_pcd(source=cad_model_pcd, voxel_size=voxel_size)
     o3d.visualization.draw_geometries([source])
     o3d.visualization.draw_geometries([source_down])
     for i in range(nb_clusters):
@@ -111,8 +101,6 @@ if __name__ == "__main__":
                                                         target=target,
                                                         result_ransac=result_ransac,
                                                         voxel_size=voxel_size)
-        print("\n:: Transformation Matrix:")
-        print(result_icp.transformation)
 
         print(">> Registration TIME for Cluster %d : %.3f sec." %(i+1, time_ransac + time_icp))
         print("------------------------------------------------------------------------------\n")

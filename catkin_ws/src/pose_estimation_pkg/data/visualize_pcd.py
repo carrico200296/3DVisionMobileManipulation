@@ -11,18 +11,21 @@ from functions import *
 filename = sys.argv[1]
 pcd = o3d.io.read_point_cloud(filename)
 print(pcd)
-distance_threshold = 0.000009
+distance_threshold = 0.01
 
-#_, pcd = segment_plane_ransac(cloud=pcd, distance_threshold=0.00009, ransac_n=3, num_iterations=100, display=False)
 pcd = threshold_filter_min_max(pcd, axis=0, min_distance=-0.15, max_distance=0.15)
 pcd = threshold_filter_min_max(pcd, axis=1, min_distance=-0.15, max_distance=0.15)
 pcd = threshold_filter_min_max(pcd, axis=2, min_distance=0.3, max_distance=0.53)
-#plane, pcd = segment_plane_ransac(cloud=pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
-pcd, inliers = remove_color_outlier(cloud=pcd, color_threshold=200)
+#plane_pcd, pcd = segment_plane_ransac(cloud=pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=True)
+points = np. asarray(pcd.points)
+points_samples = np.asarray([points[500, :], points[1000, :], points[1500, :]])
+plane_pcd, pcd = segment_plane_3points(cloud=pcd, points_samples=points_samples, distance_threshold=distance_threshold, display=True)
+#pcd, inliers = threshold_filter_color(cloud=pcd, color_threshold=200)
 
 frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
 o3d.visualization.draw_geometries([pcd])
 
+'''
 # DBSCAN Clustering
 #scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=pcd, eps=0.01, min_samples=400, min_points_cluster = 3000, display=False)
 scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=pcd, eps=0.01, min_samples=100, min_points_cluster = 1000, display=False)
@@ -33,7 +36,7 @@ for cluster in range(nb_clusters):
     print("   Cluster %d: %d points" %(cluster + 1, nb_cluster_points))
 
 o3d.visualization.draw_geometries(scene_pcd_clustered)
-
+'''
 
 
 

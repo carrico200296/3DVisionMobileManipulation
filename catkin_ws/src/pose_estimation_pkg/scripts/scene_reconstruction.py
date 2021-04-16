@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    broadcaster = tf2_ros.StaticTransformBroadcaster()
+    static_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
     depth_frame = "camera_depth_optical_frame"
     tcp_frame = "wrist_3_link"
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         #o3d.visualization.draw_geometries([scen_pcd])
         scene_view.append(orh.rospc_to_o3dpc(rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2), remove_nans=True))
         tf_transform_base_view = tfBuffer.lookup_transform(base_frame, depth_frame, rospy.Time())
-        broadcaster_scene_view_frame(broadcaster, view_frames[i], tf_transform_base_view)
+        broadcaster_scene_view_frame(static_broadcaster, view_frames[i], tf_transform_base_view)
         o3d.io.write_point_cloud("scene_view" + str(i) + ".pcd", filter_pcd(scene_view[i]))
         print("   View %d recorded" % i)
 

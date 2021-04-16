@@ -80,7 +80,7 @@ void ArucoRoi::callback_sub_img(const sensor_msgs::ImageConstPtr& img_input)
         camera_matrix = ( cv::Mat_<double>(3, 3) << 
         931.7362060546875, 0.0, 622.6597900390625,
         0.0, 931.1814575195312, 354.47479248046875,
-        0.0, 0.0, 1.0); // has to be checked
+        0.0, 0.0, 1.0); // checked
     }else if(camera == "D435"){
         // Camera Matrix for D435
         camera_matrix = ( cv::Mat_<double>(3, 3) << 
