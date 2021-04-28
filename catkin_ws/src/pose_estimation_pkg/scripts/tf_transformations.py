@@ -3,6 +3,46 @@
 import numpy as np
 import rospy
 import tf
+import scipy
+from scipy.spatial.transform import Rotation as R
+
+# EXAMPLE: this a transfomration got it from base to object_frame_1: rosrun tf tf_echo base object_frame_1
+# it is used to test if the UR can pick it up
+'''
+:: Manipulation Module - Pose Component 1
+   x: 410.3244 mm
+   y: 73.5621 mm
+   z: 16.6593 mm
+   qx: 0.4779 rad
+   qy: -0.5162 rad
+   qz: -0.5695 rad
+   qw: 0.4253 rad
+Roll: 1.56043 rad
+Pitch: 0.10547 rad
+Yaw: -1.75435 rad
+[[-0.18151243 -0.00902165 -0.98334727  0.        ]
+ [-0.97773759 -0.10539134  0.18144387  0.        ]
+ [-0.1052732   0.9943899   0.01030904  0.        ]
+ [ 0.          0.          0.          1.        ]]
+'''
+T_matrix = [[-0.18151243, -0.00902165, -0.98334727,  0.0],
+            [-0.97773759, -0.10539134,  0.18144387,  0.0],
+            [-0.1052732 ,  0.9943899 ,  0.01030904,  0.0],
+            [ 0.0       ,  0.0      ,  0.0       ,  1.0]]
+rot_mtx = R.from_quat([0.4779, -0.5162, -0.5695, 0.4253])
+#print(rot_mtx.as_dcm())
+#print(rot_mtx.as_rotvec())
+#print(rot_mtx.as_euler('zyx', degrees=False))
+
+ang = np.pi/2 # in rad
+R_matrix = rot_mtx.as_dcm()
+rot_x = np.array([[1.0, 0.0, 0.0],
+                  [0.0, np.cos(ang), -np.sin(ang)],
+                  [0.0, np.sin(ang), np.cos(ang)]])
+rot_x = R.from_euler('x', 90, degrees=True).as_dcm()
+R_matrix_transform = R.from_dcm(np.linalg.multi_dot([R_matrix, rot_x]))
+print(R_matrix_transform.as_rotvec())
+
 
 # TF TRANSFORMATIONS for Realsense D415 and URe robot fixed station Robot Lab
 # info: RPY (roll pitch yaw) is rotation around ZYX
@@ -69,4 +109,3 @@ print("Translation: X Y Z")
 print(trans_wrist_cameraLink)
 print("Rotation: quaternion")
 print(q_wrist_cameraLink)
-

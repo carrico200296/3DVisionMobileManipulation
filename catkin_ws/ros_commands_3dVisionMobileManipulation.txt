@@ -126,6 +126,7 @@ info: RPY (roll pitch yaw) is rotation around ZYX
 $ rosrun tf view_frames (save a frames.pdf file)
 $ rosrun rqt_tf_tree rqt_tf_tree
 $ rosrun tf tf_echo <source_frame> <target_frame> [echo_rate]
+Explanation: from the <source_frame> to <target_frame>, same as, tranformation of <target_frame> respect to <source_frame>
 
 # Transformation of /camera_link frame respect to the /wrist_3_link frame
 Homogeneous Transformation of /camera_link respect to /wrist_3_frame:

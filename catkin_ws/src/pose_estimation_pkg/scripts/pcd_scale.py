@@ -7,7 +7,7 @@ filename = sys.argv[1]
 pcd = o3d.io.read_point_cloud(filename)
 
 pcd_scaled = copy.deepcopy(pcd)
-pcd_scaled.scale(1.0/1000, center=(0,0,0))
+pcd_scaled.scale(1.0/1000, center=True)
 
 o3d.visualization.draw_geometries([pcd_scaled, pcd])
 

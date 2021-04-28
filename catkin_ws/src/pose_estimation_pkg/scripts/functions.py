@@ -11,6 +11,7 @@ import math
 
 import rospy
 from open3d_ros_helper import open3d_ros_helper as orh
+from scipy.spatial.transform import Rotation as R
 import cv2
 from cv2 import aruco
 import sys
@@ -180,7 +181,7 @@ def segment_plane_3points(cloud, points_samples, distance_threshold, display=Fal
 
     return plane_pcd, pcd
 
-def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterations=100, display=False):
+def segment_plane_ransac(cloud, distance_threshold=0.004, ransac_n=5, num_iterations=1000, display=False):
     print(":: Perform RANSAC Plane Segmentation")
     pcd = copy.deepcopy(cloud)
     plane_model, inliers_plane = pcd.segment_plane(distance_threshold=distance_threshold, ransac_n=ransac_n, num_iterations=num_iterations)
@@ -191,7 +192,7 @@ def segment_plane_ransac(cloud, distance_threshold=0.007, ransac_n=3, num_iterat
 
     return plane_pcd, pcd
 
-def cluster_dbscan(cloud, eps=0.01, min_samples=400, min_points_cluster=4000, display=False):
+def cluster_dbscan(cloud, eps=0.01, min_samples=100, min_points_cluster=2000, display=False):
 
     print(":: DBSCAN Clustering")
     pcd_temp = copy.deepcopy(cloud)
@@ -209,6 +210,11 @@ def cluster_dbscan(cloud, eps=0.01, min_samples=400, min_points_cluster=4000, di
             del final_clusters[cluster]
             nb_clusters = nb_clusters - 1
             print("   Cluster %d removed. Points: %d" % (cluster + 1, nb_cluster_points))
+
+    print(":: Final Scene Clusters to register:")
+    for cluster in range(nb_clusters):
+        nb_cluster_points = len(final_clusters[cluster].points)
+        print("   Cluster %d: %d points" %(cluster + 1, nb_cluster_points))
 
     return final_clusters, nb_clusters, pcd
 
@@ -234,6 +240,9 @@ def extract_clusters(cloud, labels, display=False):
 
     return pcd_clustered, nb_clusters, pcd
 
+
+# PREPROCESSING CAD MODEL
+# include here all the pipeline to load the cad_model.ply, convert to pcd, scale it, downsample it and prepare it for the registration
 
 
 # FUNCTIONS FOR PREPROCESSING A POINTCLOUD ------------------------------------------------------------------------------
@@ -322,7 +331,7 @@ def draw_registration_result(source, target, transformation):
 def execute_global_registration(source, target, source_fpfh, target_fpfh,
                                 voxel_size):
 
-    max_correspondence_distance = 0.1 #voxel_size * 0.5 # before was 1.5
+    max_correspondence_distance = 0.5 #voxel_size * 0.5 # before was 1.5
     estimation_method = o3d.registration.TransformationEstimationPointToPoint(False)
     #estimation_method = o3d.registration.TransformationEstimationPointToPlane() PointToPlane is not working!!!
     ransac_n = 4
@@ -428,13 +437,13 @@ def broadcaster_aruco_color_frame(broadcaster, rvecs, tvecs, aruco_frame_name):
     broadcaster.sendTransform(transformStamped)
 
 def broadcaster_aruco_depth_frame(broadcaster, transformStamped, aruco_frame_name):
-    transformStamped.header.stamp = rospy.Time.now();
+    transformStamped.header.stamp = rospy.Time.now()
     transformStamped.header.frame_id = "camera_depth_optical_frame"
     transformStamped.child_frame_id = aruco_frame_name
 
     broadcaster.sendTransform(transformStamped)
 
-def broadcaster_component_frame(broadcaster, object_frame_name, t_matrix):
+def broadcaster_component_frame(broadcaster, ref_frame_name, object_frame_name, t_matrix):
 
     rot_matrix = t_matrix[:3,:3]
     pose_mat = np.eye(4)
@@ -442,21 +451,21 @@ def broadcaster_component_frame(broadcaster, object_frame_name, t_matrix):
     trans_vector = t_matrix[:3,3]
     q = tf.transformations.quaternion_from_matrix(pose_mat)
 
-    static_transformStamped = geometry_msgs.msg.TransformStamped()
-    static_transformStamped.header.stamp = rospy.Time.now()
-    static_transformStamped.header.frame_id = "camera_depth_optical_frame"
-    static_transformStamped.child_frame_id = object_frame_name
+    transformStamped = geometry_msgs.msg.TransformStamped()
+    transformStamped.header.stamp = rospy.Time.now()
+    transformStamped.header.frame_id = ref_frame_name
+    transformStamped.child_frame_id = object_frame_name
 
-    static_transformStamped.transform.translation.x = trans_vector[0]
-    static_transformStamped.transform.translation.y = trans_vector[1]
-    static_transformStamped.transform.translation.z = trans_vector[2]
+    transformStamped.transform.translation.x = trans_vector[0]
+    transformStamped.transform.translation.y = trans_vector[1]
+    transformStamped.transform.translation.z = trans_vector[2]
 
-    static_transformStamped.transform.rotation.x = q[0]
-    static_transformStamped.transform.rotation.y = q[1]
-    static_transformStamped.transform.rotation.z = q[2]
-    static_transformStamped.transform.rotation.w = q[3]
+    transformStamped.transform.rotation.x = q[0]
+    transformStamped.transform.rotation.y = q[1]
+    transformStamped.transform.rotation.z = q[2]
+    transformStamped.transform.rotation.w = q[3]
 
-    broadcaster.sendTransform(static_transformStamped)
+    broadcaster.sendTransform(transformStamped)
 
 def broadcaster_scene_view_frame(broadcaster, scene_view_frame, transformation):
 
@@ -505,40 +514,33 @@ def tf_transform_pcd_ICP(source_pcd, target_pcd, tf_transform, pcd_view):
 
     return source_pcd_IPC, pcd_view
 
+def from_Tmatrix_to_tf(ref_frame_name, object_frame_name, t_matrix):
+
+    rot_matrix = t_matrix[:3,:3]
+    pose_mat = np.eye(4)
+    pose_mat[:3, :3] = rot_matrix
+    trans_vector = t_matrix[:3,3]
+    q = tf.transformations.quaternion_from_matrix(pose_mat)
+
+    transformStamped = geometry_msgs.msg.TransformStamped()
+    transformStamped.header.stamp = rospy.Time.now()
+    transformStamped.header.frame_id = ref_frame_name
+    transformStamped.child_frame_id = object_frame_name
+
+    transformStamped.transform.translation.x = trans_vector[0]
+    transformStamped.transform.translation.y = trans_vector[1]
+    transformStamped.transform.translation.z = trans_vector[2]
+
+    transformStamped.transform.rotation.x = q[0]
+    transformStamped.transform.rotation.y = q[1]
+    transformStamped.transform.rotation.z = q[2]
+    transformStamped.transform.rotation.w = q[3]
+
+    return transformStamped
+
 
 
 # ARUCO FUNCTIONS
-
-def get_pcd_roi(cloud, tfBuffer):
-    scene_pcd = copy.deepcopy(cloud)
-    detected_roi = []
-    size_aruco = 0.04
-    for i in range(4):
-        aruco_id_frame = "depth_aruco_id_" + str(i+1)
-        tf_transform = tfBuffer.lookup_transform("camera_depth_optical_frame", aruco_id_frame, rospy.Time(0))
-        detected_roi.append((tf_transform.transform.translation.x,
-                             tf_transform.transform.translation.y,
-                             tf_transform.transform.translation.z))
-    
-    x_min = detected_roi[0][0] - size_aruco 
-    x_max = detected_roi[1][0] + size_aruco
-    y_min = detected_roi[0][1] - size_aruco
-    y_max = detected_roi[2][1] + size_aruco
-    z_max = detected_roi[0][2]
-    z_min = z_max - 0.2
-
-    print("x_min = %.3f" %x_min)
-    print("x_max = %.3f" %x_max)
-    print("y_min = %.3f" %y_min)
-    print("y_max = %.3f" %y_max)
-    print("z_min = %.3f" %z_min)
-    print("z_max = %.3f" %z_max)
-
-    scene_pcd = threshold_filter_min_max(scene_pcd, axis=0, min_distance=x_min, max_distance=x_max)
-    scene_pcd = threshold_filter_min_max(scene_pcd, axis=1, min_distance=y_min, max_distance=y_max)
-    scene_pcd = threshold_filter_min_max(scene_pcd, axis=2, min_distance=z_min, max_distance=z_max)
-
-    return scene_pcd
 
 def detect_aruco_markers(img, display=False):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -555,7 +557,6 @@ def detect_aruco_markers(img, display=False):
             for i in range(len(ids)):
                 c = corners[i][0]
                 plt.plot([c[:, 0].mean()], [c[:, 1].mean()], "o", label = "id={0}".format(ids[i]))
-                #print([c[:, 0].mean()], [c[:, 1].mean()])
             plt.legend()
         plt.show()
 
@@ -565,6 +566,11 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
 
     distCoeffs = np.zeros((5,1))
     if camera_type == "D415": 
+        '''
+        camera_mtx = np.array([[930.327, 0.0, 629.822],
+                                [0.0, 930.327, 358.317],
+                                [0.0, 0.0, 1.0]])
+        '''
         camera_mtx = np.array([[931.7362060546875, 0.0, 622.6597900390625],
                                 [0.0, 931.1814575195312, 354.47479248046875],
                                 [0.0, 0.0, 1.0]])
@@ -587,3 +593,12 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
         plt.show()
 
     return img_axis, rvecs, tvecs
+
+
+# USEFUL COMMANDS
+
+#_, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
+#scene_pcd = threshold_filter_min_max(scene_pcd, axis=0, min_distance=-0.15, max_distance=0.15)
+#scene_pcd = threshold_filter_min_max(scene_pcd, axis=1, min_distance=-0.15, max_distance=0.15)
+#scene_pcd = threshold_filter_min_max(scene_pcd, axis=2, min_distance=0.3, max_distance=0.53)
+#plane, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)

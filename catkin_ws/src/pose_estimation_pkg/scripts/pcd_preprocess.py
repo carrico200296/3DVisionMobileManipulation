@@ -19,7 +19,7 @@ if __name__ == "__main__":
     
     filename = sys.argv[1]
     pcd_input = o3d.io.read_point_cloud(filename)
-    print(":: Read Point Cloud with " + str(len(pcd_input.points)) + " points" )
+    print(":: Read Point Cloud with %d points" %len(pcd_input.points))
 
     pcd = copy.deepcopy(pcd_input)
     origin_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
