@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     print(" :: Loading scene reconstructed point cloud.")
     #scene_pcd = o3d.io.read_point_cloud(sys.argv[2], print_progress=True)
-    data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, rospy.Duration(60.0))
+    data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, rospy.Duration(120.0))
     scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
     #o3d.visualization.draw_geometries([scene_pcd])
 

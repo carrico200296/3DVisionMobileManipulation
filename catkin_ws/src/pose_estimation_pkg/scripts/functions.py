@@ -567,13 +567,16 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
     distCoeffs = np.zeros((5,1))
     if camera_type == "D415": 
         '''
-        camera_mtx = np.array([[930.327, 0.0, 629.822],
-                                [0.0, 930.327, 358.317],
-                                [0.0, 0.0, 1.0]])
+        # camera_matrix from camera_calibration pkg ros wiki
+        camera_mtx = np.array([[950.950833, 0.0, 612.473931],
+                               [0.0, 958.792824, 340.034433],
+                               [0.0, 0.0, 1.0]])
         '''
+        # default camera_matrix from realsense ros wrapper
         camera_mtx = np.array([[931.7362060546875, 0.0, 622.6597900390625],
                                 [0.0, 931.1814575195312, 354.47479248046875],
                                 [0.0, 0.0, 1.0]])
+
     if camera_type == "D435":
         camera_mtx = np.array([[617.0361328125, 0.0, 327.0294189453125],
                                 [0.0, 617.2791137695312, 237.9000701904297],

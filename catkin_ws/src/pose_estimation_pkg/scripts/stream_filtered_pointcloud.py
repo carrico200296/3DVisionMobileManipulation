@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(5)
 
     scene_pcd = o3d.geometry.PointCloud()
     #vis = o3d.visualization.Visualizer()

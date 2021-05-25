@@ -90,7 +90,7 @@ if __name__ == "__main__":
         print("--------------------------------------------")
         tf_transform_view_to_view0 = tfBuffer.lookup_transform(view_frames[0], view_frames[j+1], rospy.Time(0))
         pcd_view = copy.deepcopy(scene_view[j+1])
-        _, scene_view[j+1] = segment_plane_ransac(cloud=scene_view[j+1], distance_threshold=distance_threshold, ransac_n=5, num_iterations=1000, display=False)
+        _, scene_view[j+1] = segment_plane_ransac(cloud=scene_view[j+1], distance_threshold=distance_threshold, ransac_n=5, num_iterations=600, display=False)
         scene_view[j+1], pcd_view = tf_transform_pcd_ICP(scene_view[j+1], scene_view[0],tf_transform_view_to_view0, pcd_view)
         #scene_reconstructed = scene_reconstructed + pcd_view
         scene_reconstructed_ICP = scene_reconstructed_ICP + scene_view[j+1]
