@@ -203,18 +203,23 @@ def cluster_dbscan(cloud, eps=0.01, min_samples=100, min_points_cluster=2000, di
     pcd_clustered, nb_clusters, pcd = extract_clusters(cloud=pcd_temp, labels=labels_dbscan, display=display)
 
     final_clusters = []
-    final_clusters = list(pcd_clustered)
+    idx_to_keep = []
+    #final_clusters = list(pcd_clustered)
     for cluster in range(nb_clusters):
         nb_cluster_points = len(pcd_clustered[cluster].points)
-        if nb_cluster_points < min_points_cluster:
-            del final_clusters[cluster]
+        if nb_cluster_points > min_points_cluster:
+            idx_to_keep.append(cluster)
+        if nb_cluster_points <= min_points_cluster:
+            #del final_clusters[cluster]
             nb_clusters = nb_clusters - 1
-            print("   Cluster %d removed. Points: %d" % (cluster + 1, nb_cluster_points))
+            print("   Cluster %d removed. Points: %d" % (cluster, nb_cluster_points))
+    for idx in idx_to_keep:
+        final_clusters.append(pcd_clustered[idx])
 
     print(":: Final Scene Clusters to register:")
-    for cluster in range(nb_clusters):
-        nb_cluster_points = len(final_clusters[cluster].points)
-        print("   Cluster %d: %d points" %(cluster + 1, nb_cluster_points))
+    for i in range(nb_clusters):
+        nb_points = len(final_clusters[i].points)
+        print("   Cluster %d: %d points" %(i, nb_points))
 
     return final_clusters, nb_clusters, pcd
 
@@ -546,6 +551,7 @@ def detect_aruco_markers(img, display=False):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
     parameters =  aruco.DetectorParameters_create()
+    parameters.doCornerRefinement = True
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
     img_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
 

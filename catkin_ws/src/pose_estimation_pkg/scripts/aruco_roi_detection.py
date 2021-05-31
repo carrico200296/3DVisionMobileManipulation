@@ -18,6 +18,8 @@ from open3d_ros_helper import open3d_ros_helper as orh
 
 from functions import *
 
+import rtde_control
+import rtde_receive
 
 if __name__ == "__main__":
 
@@ -25,22 +27,32 @@ if __name__ == "__main__":
     pub = rospy.Publisher("/aruco/img_detected_markers", sensor_msgs.msg.Image, queue_size=1)
     bridge = cv_bridge.CvBridge()
     camera_type = "D415"
+    '''
+    rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
+    rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
+    home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
+    home_pose_joints = [-0.25712525844573975, 1.7671558856964111, 2.553719997406006, 0.3392879366874695, 0.14902238547801971, -0.12733711302280426]
+    rtde_c.moveL(home_pose, 0.2, 0.5)
+    rtde_c.stopScript()
+    rtde_c.disconnect()
+    time.sleep(2.0) # wait 2 seconds until the realsense is initialized 
+    '''
 
     broadcaster = tf2_ros.TransformBroadcaster()
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    rate = rospy.Rate(10)
-    time.sleep(8.0) # wait 5 seconds until the realsense is initialized 
+    time.sleep(2.0) # wait 2 seconds until the realsense is initialized 
+    rate = rospy.Rate(10.0) # this has to be checked in order to do a good filtering, check also the transformation from 2D to 3D
 
     while not rospy.is_shutdown():
         rate.sleep()
         data_color = rospy.wait_for_message("/camera/color/image_raw", sensor_msgs.msg.Image)
         color_image = bridge.imgmsg_to_cv2(data_color, desired_encoding="passthrough")
-
         img_markers, markerCorners, markerIds = detect_aruco_markers(img=color_image, display=False)
+
         if markerIds is not None:
-            img_axis, rvecs, tvecs = detect_marker_pose(img=color_image, corners=markerCorners, ids=markerIds, camera_type=camera_type, display=False)
+            img_axis, rvecs, tvecs = detect_marker_pose(img=img_markers, corners=markerCorners, ids=markerIds, camera_type=camera_type, display=False)
             for i in range(len(markerIds)):
                 color_aruco_frame = "color_aruco_id_" + str(markerIds[i][0])
                 broadcaster_aruco_color_frame(broadcaster, rvecs[i], tvecs[i], color_aruco_frame)
@@ -48,7 +60,8 @@ if __name__ == "__main__":
                 depth_aruco_frame = "depth_aruco_id_" + str(markerIds[i][0])
                 broadcaster_aruco_depth_frame(broadcaster, transformStamped, depth_aruco_frame)
             try:
-                pub.publish(bridge.cv2_to_imgmsg(img_markers, "bgr8"))
+                pub.publish(bridge.cv2_to_imgmsg(img_axis, "bgr8"))
             except CvBridgeError as e:
                 print(e)
+
     rospy.spin()

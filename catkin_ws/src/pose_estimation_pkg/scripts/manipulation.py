@@ -30,9 +30,9 @@ if __name__ == "__main__":
     broadcaster = tf2_ros.TransformBroadcaster()
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-    nb_components = rospy.wait_for_message("/pose_estimation/nb_components", std_msgs.msg.String, rospy.Duration(400.0))
-    rtde_c = rtde_control.RTDEControlInterface("192.168.10.20")
-    rtde_r = rtde_receive.RTDEReceiveInterface("192.168.10.20")
+    nb_components = rospy.wait_for_message("/pose_estimation/nb_components", std_msgs.msg.String, rospy.Duration(900.0))
+    rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
+    rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
 
     base_frame = "base"
     print(":: Number of components detected = %d" %(int(nb_components.data)))
@@ -56,14 +56,6 @@ if __name__ == "__main__":
 
         rot_matrix = R.from_quat(quaternion).as_dcm()
         rot_vector = R.from_quat(quaternion).as_rotvec()
-        print("Rotation quaternion")
-        print(quaternion)
-        print("Rotation Matrix:")
-        print(rot_matrix)
-        print("Rotation Vector:")
-        print(rot_vector)
-
-        print("Calculate the pose...")
         y_axis = rot_matrix[:3,1]
         y_axis[2] = 0.0
         x_axis = np.array([-y_axis[1], y_axis[0], 0.0])
@@ -86,25 +78,28 @@ if __name__ == "__main__":
         print("   Rz: %.4f rad" %rot_vector[2])
 
         tool_offset = 0.1245
-        off_set = tool_offset + 0.07 
+        off_set = tool_offset + 0.08
 
         rtde_c.moveL([t[0], t[1], t[2] + off_set, rot_vector[0], rot_vector[1], rot_vector[2]], 0.05, 0.2)
+        rtde_c.gripperDisable()
+        rtde_c.gripperRelease(0)
         current_TCP = rtde_r.getActualTCPPose()
         picking_pose = current_TCP[:]
         picking_pose[2] = 0.1315
         rtde_c.moveL(picking_pose, 0.05, 0.1)
-        rtde_c.gripperDisable()
         time.sleep(0.2)
         rtde_c.gripperGrasp(0)
         time.sleep(1)
         current_TCP[2] = current_TCP[2] + off_set
-        rtde_c.moveL(current_TCP, 0.05, 0.1)
-        rtde_c.moveL([0.41022, -0.3445, 0.22424, 2.14, -2.301, 0.0], 0.1, 0.1)
+        rtde_c.moveL(current_TCP, 0.2, 0.1)
+        placing_point = [0.1974, 0.18591, 0.24911, 2.908, -1.188, 0.0]
+        rtde_c.moveL(placing_point, 0.2, 0.3)
         time.sleep(0.3)
         rtde_c.gripperRelease(0)
-        time.sleep(3.0)
-        rtde_c.moveL(current_TCP, 0.05, 0.1)
- 
+        time.sleep(1.0)
+        #rtde_c.moveL(current_TCP, 0.2, 0.1)
+
+    rtde_c.gripperDisable()
     rtde_c.stopScript()
     rtde_c.disconnect()
 

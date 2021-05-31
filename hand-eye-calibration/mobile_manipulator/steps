@@ -1,0 +1,25 @@
+
+# First of all, install the externalControl URCap to use the ROS_UR_DRIVER
+
+# 1. we need to get the calibration.yaml file from the UR robot
+cd ~/ros_ws/ur_driver_ws
+roslaunch ur_calibration calibration_correction.launch robot_ip:=192.168.12.245 target_filename:="/home/$USER/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_mobile_manipulator_calibration.yaml"
+
+
+# 2. run the UR_DRIVER_ROS with the saved kinematics calibration.yaml file and the IP of the UR robot
+cd ~/ros_ws/ur_driver_ws
+roslaunch ur_robot_driver ur5e_bringup.launch robot_ip:=192.168.10.20 kinematics_config:="/home/$USER/ros_ws/ur_driver_ws/src/Universal_Robots_ROS_Driver/ur_calibration/etc/ur5e_mobile_manipulator_calibration.yaml"
+or if the launch "ur5e_establish_connection_mobile_manipulator.launch" has been created:
+roslaunch ur_robot_driver ur5e_establish_connection_mobile_manipulator.launch
+
+
+# 3. run the INtel Realsense D415 camera node
+roslaunch realsense2_camera rs_camera.launch color_width:=1280 color_height:=720
+
+
+# 4. run the UR5e PLANNING EXECUTION + MOVEIT CONFIG + RVIZ visualization + HAND-EYE CALIBRATION plug-in
+cd ~/ros_ws/moveit_ws
+terminal_1: roslaunch ur5_e_moveit_config ur5_e_moveit_planning_execution.launch 
+terminal_2: roslaunch ur5_e_moveit_config moveit_rviz.launch config:=true
+
+

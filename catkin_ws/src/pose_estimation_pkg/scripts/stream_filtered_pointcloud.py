@@ -18,17 +18,13 @@ from functions import *
 if __name__ == "__main__":
 
     rospy.init_node('stream_filtered_pointcloud_node')
-    wait_for_detected_markers = rospy.wait_for_message("/aruco/img_detected_markers", sensor_msgs.msg.Image)
+    wait_for_detected_markers = rospy.wait_for_message("/aruco/img_detected_markers", sensor_msgs.msg.Image, rospy.Duration(20.0))
     pub = rospy.Publisher("/pose_estimation/filtered_pointcloud", sensor_msgs.msg.PointCloud2, queue_size=1)
+    scene_pcd = o3d.geometry.PointCloud()
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    rate = rospy.Rate(5)
-
-    scene_pcd = o3d.geometry.PointCloud()
-    #vis = o3d.visualization.Visualizer()
-    #vis.create_window()
-    #vis.add_geometry(scene_pcd)
+    rate = rospy.Rate(5.0)
 
     while not rospy.is_shutdown():
         rate.sleep()
@@ -39,7 +35,7 @@ if __name__ == "__main__":
         detected_roi = []
         for i in range(4):
             aruco_id_frame = "depth_aruco_id_" + str(i+1)
-            tf_transform = tfBuffer.lookup_transform("camera_depth_optical_frame", aruco_id_frame, rospy.Time(0), rospy.Duration(0.3))
+            tf_transform = tfBuffer.lookup_transform("camera_depth_optical_frame", aruco_id_frame, rospy.Time(0), rospy.Duration(0.5))
             detected_roi.append((tf_transform.transform.translation.x,
                                 tf_transform.transform.translation.y,
                                 tf_transform.transform.translation.z))
@@ -66,28 +62,9 @@ if __name__ == "__main__":
         scene_pcd = threshold_filter_min_max(scene_pcd, axis=1, min_distance=y_min, max_distance=y_max)
         scene_pcd = threshold_filter_min_max(scene_pcd, axis=2, min_distance=z_min, max_distance=z_max)
 
-        #o3d.visualization.draw_geometries([scene_pcd])
-        #vis.update_geometry(scene_pcd)
-        #vis.poll_events()
-        #vis.update_renderer()
-
         scene_pcd_pointcloud2 = orh.o3dpc_to_rospc(scene_pcd, frame_id="camera_depth_optical_frame", stamp=rospy.Time.now())
         pub.publish(scene_pcd_pointcloud2)
-    #vis.destroy_window()
 
     quit()
     rospy.spin()
     print("DONE")
-
-'''
-
-    p1 = detected_roi[0]
-    p2 = detected_roi[1]
-    p3 = detected_roi[2]
-    points_samples = np.asarray([p1, p2, p3])
-    distance_threshold = 0.004
-    plane_pcd, pcd = segment_plane_3points(cloud=scene_pcd, points_samples=points_samples, distance_threshold=distance_threshold, display=True)
-    plane, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=5, num_iterations=1000, display=True)
-
-
-'''
