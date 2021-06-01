@@ -544,6 +544,60 @@ def from_Tmatrix_to_tf(ref_frame_name, object_frame_name, t_matrix):
     return transformStamped
 
 
+# MANIPULATION FUNCTIONS
+
+def get_t_rotvector_component(tf_transform_base_component):
+    t = [tf_transform_base_component.transform.translation.x,
+         tf_transform_base_component.transform.translation.y,
+         tf_transform_base_component.transform.translation.z]
+
+    quaternion = [tf_transform_base_component.transform.rotation.x,
+                  tf_transform_base_component.transform.rotation.y,
+                  tf_transform_base_component.transform.rotation.z,
+                  tf_transform_base_component.transform.rotation.w]
+
+    rot_matrix = R.from_quat(quaternion).as_dcm()
+    rot_vector = R.from_quat(quaternion).as_rotvec()
+    y_axis = rot_matrix[:3,1]
+    y_axis[2] = 0.0
+    x_axis = np.array([-y_axis[1], y_axis[0], 0.0])
+    rot_matrix[:3,0] = np.transpose(x_axis)
+    rot_matrix[:3,2] = np.transpose(np.array([0.0, 0.0, -1.0]))
+    rot_vector = R.from_dcm(rot_matrix).as_rotvec()
+
+    print(":: Pose Component %d" %(i+1))
+    print("   Translation:")
+    print("   x: %.4f mm" %(t[0]*1000))
+    print("   y: %.4f mm" %(t[1]*1000))
+    print("   z: %.4f mm" %(t[2]*1000))
+    print("   Rotation Axis:")
+    print("   Rx: %.4f rad" %rot_vector[0])
+    print("   Ry: %.4f rad" %rot_vector[1])
+    print("   Rz: %.4f rad" %rot_vector[2])
+
+    return t, rot_vector
+
+def get_t_rotvector_target(tf_transform_base_target):
+    t = [tf_transform_base_target.transform.translation.x,
+         tf_transform_base_target.transform.translation.y,
+         tf_transform_base_target.transform.translation.z]
+
+    quaternion = [tf_transform_base_target.transform.rotation.x,
+                  tf_transform_base_target.transform.rotation.y,
+                  tf_transform_base_target.transform.rotation.z,
+                  tf_transform_base_target.transform.rotation.w]
+
+    rot_matrix = R.from_quat(quaternion).as_dcm()
+    rot_vector = R.from_quat(quaternion).as_rotvec()
+    y_axis = rot_matrix[:3,1]
+    y_axis[2] = 0.0
+    x_axis = np.array([-y_axis[1], y_axis[0], 0.0])
+    rot_matrix[:3,0] = np.transpose(x_axis)
+    rot_matrix[:3,2] = np.transpose(np.array([0.0, 0.0, -1.0]))
+    rot_vector = R.from_dcm(rot_matrix).as_rotvec()
+
+    return t, rot_vector
+
 
 # ARUCO FUNCTIONS
 
@@ -603,11 +657,3 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
 
     return img_axis, rvecs, tvecs
 
-
-# USEFUL COMMANDS
-
-#_, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)
-#scene_pcd = threshold_filter_min_max(scene_pcd, axis=0, min_distance=-0.15, max_distance=0.15)
-#scene_pcd = threshold_filter_min_max(scene_pcd, axis=1, min_distance=-0.15, max_distance=0.15)
-#scene_pcd = threshold_filter_min_max(scene_pcd, axis=2, min_distance=0.3, max_distance=0.53)
-#plane, scene_pcd = segment_plane_ransac(cloud=scene_pcd, distance_threshold=distance_threshold, ransac_n=3, num_iterations=100, display=False)

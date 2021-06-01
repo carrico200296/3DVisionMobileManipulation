@@ -120,21 +120,9 @@ Visualization Manager:
           Value: true
         camera_link:
           Value: false
-        color_aruco_id_1:
+        color_aruco_id_200:
           Value: false
-        color_aruco_id_2:
-          Value: false
-        color_aruco_id_3:
-          Value: false
-        color_aruco_id_4:
-          Value: false
-        depth_aruco_id_1:
-          Value: true
-        depth_aruco_id_2:
-          Value: true
-        depth_aruco_id_3:
-          Value: true
-        depth_aruco_id_4:
+        depth_aruco_id_200:
           Value: true
         ee_link:
           Value: true
@@ -176,25 +164,13 @@ Visualization Manager:
                         camera_link:
                           camera_aligned_depth_to_color_frame:
                             camera_color_optical_frame:
-                              color_aruco_id_1:
-                                {}
-                              color_aruco_id_2:
-                                {}
-                              color_aruco_id_3:
-                                {}
-                              color_aruco_id_4:
+                              color_aruco_id_200:
                                 {}
                           camera_color_frame:
                             {}
                           camera_depth_frame:
                             camera_depth_optical_frame:
-                              depth_aruco_id_1:
-                                {}
-                              depth_aruco_id_2:
-                                {}
-                              depth_aruco_id_3:
-                                {}
-                              depth_aruco_id_4:
+                              depth_aruco_id_200:
                                 {}
                         ee_link:
                           {}
@@ -245,10 +221,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.035399019718170166
+      Pitch: 0.12039902061223984
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.0403966903686523
+      Yaw: 2.960397958755493
     Saved: ~
 Window Geometry:
   Camera:
