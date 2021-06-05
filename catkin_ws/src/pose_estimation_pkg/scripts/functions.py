@@ -277,8 +277,9 @@ def preprocess_source_pcd(source, voxel_size, scale_factor = 1.0/1000):
     source_down = copy.deepcopy(source)
     distances = source_down.compute_nearest_neighbor_distance()
     avg_dist = np.mean(distances)
+    print("   Average distance = %.6f" %avg_dist)
     voxel_down = avg_dist * 1.2
-    print("   Downsampling with voxel_down %.3f." % voxel_down)
+    print("   Downsampling with voxel_down %.6f." % voxel_down)
     source_down = source_down.voxel_down_sample(voxel_down)
 
     radius_normal = voxel_size * 2
@@ -286,7 +287,7 @@ def preprocess_source_pcd(source, voxel_size, scale_factor = 1.0/1000):
     source.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     source_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
 
-    radius_feature = voxel_size * 5
+    radius_feature = voxel_size * 10 # before was 5 but up-down problem
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)
     source_fpfh = o3d.registration.compute_fpfh_feature(source, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
     source_down_fpfh = o3d.registration.compute_fpfh_feature(source_down, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -300,8 +301,9 @@ def preprocess_point_cloud(cloud, voxel_size):
     pcd_down = copy.deepcopy(cloud)
     distances = pcd_down.compute_nearest_neighbor_distance()
     avg_dist = np.mean(distances)
+    print("   Average distance = %.6f" %avg_dist)
     voxel_down = avg_dist * 2.5
-    print("   Downsample with a voxel_down size %.3f." % voxel_down)
+    print("   Downsample with a voxel_down size %.6f." % voxel_down)
     pcd_down = pcd_down.voxel_down_sample(voxel_down)
 
     radius_normal = voxel_size * 2
@@ -309,7 +311,7 @@ def preprocess_point_cloud(cloud, voxel_size):
     pcd.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     pcd_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     
-    radius_feature = voxel_size * 5
+    radius_feature = voxel_size * 10 # before was 5 but up-down problem
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)
     pcd_fpfh = o3d.registration.compute_fpfh_feature(pcd, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
     pcd_down_fpfh = o3d.registration.compute_fpfh_feature(pcd_down, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -326,7 +328,7 @@ def draw_registration_result(source, target, transformation):
     # Card model in gray
     source_temp.paint_uniform_color([0.7, 0.7, 0.7])
 
-    source_temp.transform(transformation)
+    #source_temp.transform(transformation)
     frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
     frame_source.transform(transformation)
     frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
@@ -336,10 +338,10 @@ def draw_registration_result(source, target, transformation):
 def execute_global_registration(source, target, source_fpfh, target_fpfh,
                                 voxel_size):
 
-    max_correspondence_distance = 0.5 #voxel_size * 0.5 # before was 1.5
+    max_correspondence_distance = 0.2 # with 0.5 problem of up-down #voxel_size * 0.5 # before was 1.5
     estimation_method = o3d.registration.TransformationEstimationPointToPoint(False)
     #estimation_method = o3d.registration.TransformationEstimationPointToPlane() PointToPlane is not working!!!
-    ransac_n = 4
+    ransac_n = 4 #with ransac_n = 4 up-down problem
     edge_length = 0.9
     checkers = [o3d.registration.CorrespondenceCheckerBasedOnEdgeLength(edge_length),
                 o3d.registration.CorrespondenceCheckerBasedOnDistance(max_correspondence_distance)]
@@ -507,7 +509,7 @@ def tf_transform_pcd_ICP(source_pcd, target_pcd, tf_transform, pcd_view):
     estimation_method = o3d.registration.TransformationEstimationPointToPoint()
     relative_fitness = 1e-6  # 1e-9 too much time
     relative_rmse = 1e-6 # 1e-7 too much time
-    max_iteration = 100 # 500 too much
+    max_iteration = 200 # 500 too much
     criteria = o3d.registration.ICPConvergenceCriteria(
                                             relative_fitness=relative_fitness,
                                             relative_rmse=relative_rmse,
@@ -564,16 +566,6 @@ def get_t_rotvector_component(tf_transform_base_component):
     rot_matrix[:3,0] = np.transpose(x_axis)
     rot_matrix[:3,2] = np.transpose(np.array([0.0, 0.0, -1.0]))
     rot_vector = R.from_dcm(rot_matrix).as_rotvec()
-
-    print(":: Pose Component %d" %(i+1))
-    print("   Translation:")
-    print("   x: %.4f mm" %(t[0]*1000))
-    print("   y: %.4f mm" %(t[1]*1000))
-    print("   z: %.4f mm" %(t[2]*1000))
-    print("   Rotation Axis:")
-    print("   Rx: %.4f rad" %rot_vector[0])
-    print("   Ry: %.4f rad" %rot_vector[1])
-    print("   Rz: %.4f rad" %rot_vector[2])
 
     return t, rot_vector
 

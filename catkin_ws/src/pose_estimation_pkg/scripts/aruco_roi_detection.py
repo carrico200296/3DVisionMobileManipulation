@@ -12,6 +12,7 @@ import tf
 import tf2_ros
 import geometry_msgs.msg
 import sensor_msgs
+import std_msgs
 import cv_bridge
 import matplotlib.pyplot as plt
 from open3d_ros_helper import open3d_ros_helper as orh
@@ -27,7 +28,8 @@ if __name__ == "__main__":
     pub = rospy.Publisher("/aruco/img_detected_markers", sensor_msgs.msg.Image, queue_size=1)
     bridge = cv_bridge.CvBridge()
     camera_type = "D415"
-    '''
+
+    # Move to HOME position
     rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
     rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
     home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
@@ -35,17 +37,18 @@ if __name__ == "__main__":
     rtde_c.moveL(home_pose, 0.2, 0.5)
     rtde_c.stopScript()
     rtde_c.disconnect()
-    time.sleep(2.0) # wait 2 seconds until the realsense is initialized 
-    '''
+    time.sleep(1.0) # wait 1 seconds
 
     broadcaster = tf2_ros.TransformBroadcaster()
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    time.sleep(2.0) # wait 2 seconds until the realsense is initialized 
+    time.sleep(3.0) # wait 2 seconds until the realsense is initialized 
     rate = rospy.Rate(10.0) # this has to be checked in order to do a good filtering, check also the transformation from 2D to 3D
+    time_start = time.time()
+    dt_time = 0.0
 
-    while not rospy.is_shutdown():
+    while not rospy.is_shutdown() and dt_time < 30.0:
         rate.sleep()
         data_color = rospy.wait_for_message("/camera/color/image_raw", sensor_msgs.msg.Image)
         color_image = bridge.imgmsg_to_cv2(data_color, desired_encoding="passthrough")
@@ -63,5 +66,8 @@ if __name__ == "__main__":
                 pub.publish(bridge.cv2_to_imgmsg(img_axis, "bgr8"))
             except CvBridgeError as e:
                 print(e)
-
-    rospy.spin()
+        dt_time = time.time() - time_start
+    print("final_time: ")
+    print(dt_time)
+    print("aruco_roi_detection_node STOPPED")
+    quit()

@@ -25,10 +25,11 @@ if __name__ == "__main__":
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
     rate = rospy.Rate(5.0)
+    time_start = time.time()
+    dt_time = 0.0
 
-    while not rospy.is_shutdown():
+    while not rospy.is_shutdown() and dt_time < 29.0:
         rate.sleep()
-
         data = rospy.wait_for_message("/camera/depth/color/points", sensor_msgs.msg.PointCloud2)
         scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
 
@@ -64,7 +65,6 @@ if __name__ == "__main__":
 
         scene_pcd_pointcloud2 = orh.o3dpc_to_rospc(scene_pcd, frame_id="camera_depth_optical_frame", stamp=rospy.Time.now())
         pub.publish(scene_pcd_pointcloud2)
+        dt_time = time.time() - time_start
 
     quit()
-    rospy.spin()
-    print("DONE")
