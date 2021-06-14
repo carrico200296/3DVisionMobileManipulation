@@ -25,6 +25,8 @@ import rtde_receive
 if __name__ == "__main__":
 
     rospy.init_node("aruco_roi_detection_node")
+    temp = rospy.wait_for_message("/navigation/mir_status", std_msgs.msg.String, rospy.Duration(300.0))
+    print(temp.data)
     pub = rospy.Publisher("/aruco/img_detected_markers", sensor_msgs.msg.Image, queue_size=1)
     bridge = cv_bridge.CvBridge()
     camera_type = "D415"
@@ -68,6 +70,4 @@ if __name__ == "__main__":
                 print(e)
         dt_time = time.time() - time_start
     print("final_time: ")
-    print(dt_time)
-    print("aruco_roi_detection_node STOPPED")
     quit()

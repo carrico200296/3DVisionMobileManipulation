@@ -59,7 +59,7 @@ if __name__ == "__main__":
     voxel_size = 1.0 # works for m200 and no-downsampled pointcoulds
 
     print(" :: Waiting for the scene reconstructed point cloud.")
-    data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, rospy.Duration(700.0))
+    data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, rospy.Duration(1000.0))
     scene_pcd = orh.rospc_to_o3dpc(data, remove_nans=True)
 
     print(":: Loading cad_model point cloud.")

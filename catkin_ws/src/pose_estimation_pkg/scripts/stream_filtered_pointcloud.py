@@ -18,7 +18,7 @@ from functions import *
 if __name__ == "__main__":
 
     rospy.init_node('stream_filtered_pointcloud_node')
-    wait_for_detected_markers = rospy.wait_for_message("/aruco/img_detected_markers", sensor_msgs.msg.Image, rospy.Duration(20.0))
+    wait_for_detected_markers = rospy.wait_for_message("/aruco/img_detected_markers", sensor_msgs.msg.Image, rospy.Duration(320.0))
     pub = rospy.Publisher("/pose_estimation/filtered_pointcloud", sensor_msgs.msg.PointCloud2, queue_size=1)
     scene_pcd = o3d.geometry.PointCloud()
 

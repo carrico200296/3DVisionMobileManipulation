@@ -143,7 +143,7 @@ if __name__ == "__main__":
     broadcaster = tf2_ros.TransformBroadcaster()
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-    nb_components = rospy.wait_for_message("/pose_estimation/nb_components", std_msgs.msg.String, rospy.Duration(900.0))
+    nb_components = rospy.wait_for_message("/pose_estimation/nb_components", std_msgs.msg.String, rospy.Duration(1200.0))
     rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
     rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
 

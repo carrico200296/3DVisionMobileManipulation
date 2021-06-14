@@ -30,7 +30,7 @@ if __name__ == "__main__":
  
     rospy.init_node('scene_reconstruction_node')
     pub = rospy.Publisher("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, queue_size=1)
-    temp = rospy.wait_for_message("/pose_estimation/filtered_pointcloud", sensor_msgs.msg.PointCloud2, rospy.Duration(20.0))
+    temp = rospy.wait_for_message("/pose_estimation/filtered_pointcloud", sensor_msgs.msg.PointCloud2, rospy.Duration(320.0))
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
