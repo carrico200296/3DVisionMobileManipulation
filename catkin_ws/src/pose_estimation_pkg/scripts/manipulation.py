@@ -42,27 +42,6 @@ def pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)
     rtde_c.moveL(picking_entry_pose, 0.2, 0.2)
 
 def place_component(rtde_c, rtde_r, placing_pose, fix_center):
-    '''
-    # Move to placing_pose
-    rtde_c.moveL(placing_pose, 0.05, 0.05)
-    # Insert component inside the fixture
-    insert_pose = rtde_r.getActualTCPPose()
-    insert_pose[2] = insert_pose[2] - 0.05
-    rtde_c.moveL(insert_pose, 0.01, 0.01)
-    # Open gripper
-    rtde_c.gripperRelease(0)
-    time.sleep(2.0)
-
-    # Move to pick another component
-    rtde_c.moveL(placing_pose, 0.1, 0.1)
-    end_point = fix_center
-    end_point[2] = 0.405
-    rtde_c.moveL(end_point, 0.1, 0.1)
-    rtde_c.gripperDisable()
-    rtde_c.gripperGrasp(0)
-    time.sleep(1.0)
-    '''
-
     # Move to placing_pose
     rtde_c.moveL(placing_pose, 0.1, 0.1)
 
@@ -157,21 +136,13 @@ if __name__ == "__main__":
 
     for i in range(int(nb_components.data)):
         tf_transform_base_component = list_transform_base_component[i]
-        t, rot_vector = get_t_rotvector_component(tf_transform_base_component=tf_transform_base_component)
+        t, rot_vector, y_axis_original = get_t_rotvector_component(tf_transform_base_component=tf_transform_base_component)
 
         print(":: Pose Component %d" %(i+1))
         print("   Translation:")
         print(t)
         print("   Rotation Axis:")
         print(rot_vector)
-        '''
-        print("   x: %.4f mm" %(t[0]*1000))
-        print("   y: %.4f mm" %(t[1]*1000))
-        print("   z: %.4f mm" %(t[2]*1000))
-        print("   Rx: %.4f rad" %rot_vector[0])
-        print("   Ry: %.4f rad" %rot_vector[1])
-        print("   Rz: %.4f rad" %rot_vector[2])
-        '''
 
         # Offset constant parameters
         tool_offset = 0.1245
@@ -186,6 +157,16 @@ if __name__ == "__main__":
         y_placing_offset = -0.0231597946661
         z_placing_offset =  0.245 # it is enough distance
 
+        ''' To do the Vision test results
+        off_set = tool_offset + 0.08
+        # Move to the picking-entry pose
+        picking_entry_pose = [t[0], t[1], t[2] + off_set, rot_vector[0], rot_vector[1], rot_vector[2]]
+        rtde_c.moveL(picking_entry_pose, 0.2, 0.2)
+        time.sleep(2.0)
+        home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
+        rtde_c.moveL(home_pose, 0.2, 0.2)
+        time.sleep(1.0)
+        '''
         # Pick Component
         pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)
 

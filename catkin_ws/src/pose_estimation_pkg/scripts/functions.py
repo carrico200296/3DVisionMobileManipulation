@@ -21,7 +21,8 @@ import geometry_msgs.msg
 import sensor_msgs
 
 
-# FUNCTIONS FOR FILTERING AND THRESHOLDING A POINTCLOUD ------------------------------------------------------------------
+
+#%% FUNCTIONS FOR FILTERING AND THRESHOLDING A POINTCLOUD ------------------------------------------------------------------
 
 def display_inlier_outlier(cloud, ind):
     # Funtion to display the pointcloud with the outliers in red
@@ -123,7 +124,7 @@ def threshold_filter_color(cloud, color_threshold=150):
 
 
 
-# FUNCTIONS FOR RANSAC PLANE SEGMENTATION AND DBSCAN CLUSTERING OBJECTS --------------------------------------------------
+#%% FUNCTIONS FOR RANSAC PLANE SEGMENTATION AND DBSCAN CLUSTERING OBJECTS --------------------------------------------------
 
 def remove_outliers(cloud, outliers, display=False):
     # INPUTS:
@@ -246,8 +247,20 @@ def extract_clusters(cloud, labels, display=False):
     return pcd_clustered, nb_clusters, pcd
 
 
-# PREPROCESSING CAD MODEL
-# include here all the pipeline to load the cad_model.ply, convert to pcd, scale it, downsample it and prepare it for the registration
+#%% PREPROCESSING CAD MODEL
+# This function loads the cad_model.ply, converts it to pcd, scales it, downsamples it and prepares it for the registration
+def load_cad_model(path):
+    cad_model_pcd = o3d.io.read_point_cloud(path, print_progress=True)
+    cad_model_pcd = cad_model_pcd.scale(1.0/1000, center=True)
+    cad_model_pcd = cad_model_pcd.voxel_down_sample(voxel_size=0.0009) # with voxel_size = 0.002 is working always (but up-down problem)
+    cad_model_pcd.translate(translation=(0, 0, 0), relative=False)
+    origin_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
+    R = origin_frame.get_rotation_matrix_from_xyz((np.pi / 2, 0, 0))
+    cad_model_pcd = threshold_filter_circle(cloud=cad_model_pcd, radius=0.009, display=False)
+    cad_model_pcd.rotate(R, center=False)
+
+    return cad_model_pcd, origin_frame
+
 
 
 # FUNCTIONS FOR PREPROCESSING A POINTCLOUD ------------------------------------------------------------------------------
@@ -266,13 +279,9 @@ def downsample_point_cloud(cloud, voxel_size):
 
     return pcd
 
-def preprocess_source_pcd(source, voxel_size, scale_factor = 1.0/1000):
+def preprocess_source_pcd(source, voxel_size):
     
     print(":: Preprocess CAD point cloud")
-    #print("   Scaling with scale_factor %.4f." % scale_factor)
-    # Scale and downsample is already done when we load the model
-    #source.scale(scale=scale_factor, center=True)
-
     source = copy.deepcopy(source)
     source_down = copy.deepcopy(source)
     distances = source_down.compute_nearest_neighbor_distance()
@@ -320,7 +329,7 @@ def preprocess_point_cloud(cloud, voxel_size):
 
 
 
-# FUNCTIONS FOR GLOBAL AND LOCAL REGISTRATION ----------------------------------------------------------------------------
+#%% FUNCTIONS FOR GLOBAL AND LOCAL REGISTRATION ----------------------------------------------------------------------------
 
 def draw_registration_result(source, target, transformation):
     source_temp = copy.deepcopy(source)
@@ -328,12 +337,13 @@ def draw_registration_result(source, target, transformation):
     # Card model in gray
     source_temp.paint_uniform_color([0.7, 0.7, 0.7])
 
-    #source_temp.transform(transformation)
-    frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
+    source_temp.transform(transformation)
+    frame_source = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
     frame_source.transform(transformation)
-    frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
+    frame_origin = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
 
-    o3d.visualization.draw_geometries([source_temp, target_temp, frame_source, frame_origin])
+    o3d.visualization.draw_geometries([source_temp, target_temp, frame_source])
+    #o3d.visualization.draw_geometries([source_temp, target_temp, frame_source, frame_origin])
 
 def execute_global_registration(source, target, source_fpfh, target_fpfh,
                                 voxel_size):
@@ -420,7 +430,7 @@ def execute_local_registration(source, target, result_ransac, voxel_size):
 
 
 
-# FUNCTIONS FOR TF TRANSFORMATIONS
+#%% FUNCTIONS FOR TF TRANSFORMATIONS
 
 def broadcaster_aruco_color_frame(broadcaster, rvecs, tvecs, aruco_frame_name):
     transformStamped = geometry_msgs.msg.TransformStamped()
@@ -521,32 +531,18 @@ def tf_transform_pcd_ICP(source_pcd, target_pcd, tf_transform, pcd_view):
 
     return source_pcd_IPC, pcd_view
 
-def from_Tmatrix_to_tf(ref_frame_name, object_frame_name, t_matrix):
+def publish_components_pose(broadcaster, object_frames, tf_components_frames):
 
-    rot_matrix = t_matrix[:3,:3]
-    pose_mat = np.eye(4)
-    pose_mat[:3, :3] = rot_matrix
-    trans_vector = t_matrix[:3,3]
-    q = tf.transformations.quaternion_from_matrix(pose_mat)
-
-    transformStamped = geometry_msgs.msg.TransformStamped()
-    transformStamped.header.stamp = rospy.Time.now()
-    transformStamped.header.frame_id = ref_frame_name
-    transformStamped.child_frame_id = object_frame_name
-
-    transformStamped.transform.translation.x = trans_vector[0]
-    transformStamped.transform.translation.y = trans_vector[1]
-    transformStamped.transform.translation.z = trans_vector[2]
-
-    transformStamped.transform.rotation.x = q[0]
-    transformStamped.transform.rotation.y = q[1]
-    transformStamped.transform.rotation.z = q[2]
-    transformStamped.transform.rotation.w = q[3]
-
-    return transformStamped
+    while not rospy.is_shutdown():
+        for i in range(len(tf_components_frames)):
+            ref_frame = "view0_frame"
+            transformation = tf_components_frames[i]
+            broadcaster_component_frame(broadcaster, ref_frame, object_frames[i], np.asarray(transformation))
+        time.sleep(0.5)
 
 
-# MANIPULATION FUNCTIONS
+
+#%% MANIPULATION FUNCTIONS
 
 def get_t_rotvector_component(tf_transform_base_component):
     t = [tf_transform_base_component.transform.translation.x,
@@ -560,6 +556,7 @@ def get_t_rotvector_component(tf_transform_base_component):
 
     rot_matrix = R.from_quat(quaternion).as_dcm()
     rot_vector = R.from_quat(quaternion).as_rotvec()
+    y_axis_original = rot_matrix[:3,1]
     y_axis = rot_matrix[:3,1]
     y_axis[2] = 0.0
     x_axis = np.array([-y_axis[1], y_axis[0], 0.0])
@@ -567,7 +564,7 @@ def get_t_rotvector_component(tf_transform_base_component):
     rot_matrix[:3,2] = np.transpose(np.array([0.0, 0.0, -1.0]))
     rot_vector = R.from_dcm(rot_matrix).as_rotvec()
 
-    return t, rot_vector
+    return t, rot_vector, y_axis_original
 
 def get_t_rotvector_target(tf_transform_base_target):
     t = [tf_transform_base_target.transform.translation.x,
@@ -591,7 +588,8 @@ def get_t_rotvector_target(tf_transform_base_target):
     return t, rot_vector
 
 
-# ARUCO FUNCTIONS
+
+#%% ARUCO FUNCTIONS
 
 def detect_aruco_markers(img, display=False):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

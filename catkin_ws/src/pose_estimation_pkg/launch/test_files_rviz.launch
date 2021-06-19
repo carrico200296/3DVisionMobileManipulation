@@ -1,6 +1,9 @@
 <launch>
     <!--<include file="$(find pose_estimation_pkg)/launch/rs_stream_depth_rviz_tf_tree.launch"></include>-->
+    <node pkg="pose_estimation_pkg" type="mir_rest_api.py" name="mir_rest_api_node" output="screen"/>
     <node pkg="pose_estimation_pkg" type="aruco_roi_detection.py" name="aruco_roi_detection_node"/>
     <node pkg="pose_estimation_pkg" type="stream_filtered_pointcloud.py" name="stream_filtered_pointcloud_node"/>
     <node pkg="pose_estimation_pkg" type="scene_reconstruction.py" name="scene_reconstruction_node" output="screen"/>
+    <node pkg="pose_estimation_pkg" type="pose_estimation.py" name="pose_estimation_node" output="screen"/>
+    <node pkg="pose_estimation_pkg" type="manipulation.py" name="manipulation_node" output="screen"/>
 </launch>

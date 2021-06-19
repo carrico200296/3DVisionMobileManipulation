@@ -68,14 +68,14 @@ if __name__ == "__main__":
     start_time = time.time()
     for i in range(nb_views):
         view_frames.append("view" + str(i) + "_frame")
-        rtde_c.moveL(pose[i], 0.2, 0.2) #ve/acce can be increased to 0.35/1.2 
+        rtde_c.moveL(pose[i], 0.2, 0.2) #vel/acce can be increased to 0.35/1.2
         time.sleep(2)
         scene_pcd = orh.rospc_to_o3dpc(rospy.wait_for_message("/pose_estimation/filtered_pointcloud", sensor_msgs.msg.PointCloud2), remove_nans=True)
         scene_view.append(scene_pcd)
         tf_transform_base_view = tfBuffer.lookup_transform(base_frame, depth_frame, rospy.Time())
         tf_views_frames.append(tf_transform_base_view)
         broadcaster_scene_view_frame(static_broadcaster, view_frames[i], tf_transform_base_view)
-        o3d.io.write_point_cloud("/home/carlos/Desktop/samples_for_report/scene_view" + str(i) + ".pcd", scene_view[i])
+        o3d.io.write_point_cloud("/home/carlos/Desktop/samples_for_report/results/pcd_samples/scene_view" + str(i) + ".pcd", scene_view[i])
         print("   View %d recorded" % i)
 
     try:
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     print("Reconstruction UR planning time: %.3f" %(end_time - start_time))
 
     start_time = time.time()
-    distance_threshold = 0.0045 # I have changed it from 0.004 tp 0.005/ also the number of ransac iterations: from 1000 to 100
+    distance_threshold = 0.0045 # I have changed it from 0.004 to 0.0045/ also the number of ransac iterations: from 1000 to 100
     scene_view[0] = filter_pcd(scene_view[0])
     scene_reconstructed = scene_view[0]
     _, scene_view[0] = segment_plane_ransac(cloud=scene_view[0], distance_threshold=distance_threshold, ransac_n=5, num_iterations=100, display=False)
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     end_time = time.time()
     print("Scene_reconstructed published! Time: %.3f" %(end_time - start_time))
 
-    o3d.io.write_point_cloud("/home/carlos/Desktop/samples_for_report/scene_reconstructed_ICP_m200.pcd", scene_pcd)
+    o3d.io.write_point_cloud("/home/carlos/Desktop/samples_for_report/results/pcd_samples/scene_reconstructed_ICP_m200.pcd", scene_pcd)
     o3d.visualization.draw_geometries([scene_pcd])
 
     quit()

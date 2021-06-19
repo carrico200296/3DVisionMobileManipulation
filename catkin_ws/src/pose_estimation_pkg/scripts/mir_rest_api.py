@@ -53,7 +53,7 @@ def execute_mission(host,mission,headers):
 
 if __name__ == "__main__":
 
-    rospy.init_node("aruco_roi_detection_node")
+    rospy.init_node("mir_rest_api_node")
     pub_mir_status = rospy.Publisher("/navigation/mir_status", std_msgs.msg.String, queue_size=1)
 
     # Display stored missions
@@ -66,10 +66,12 @@ if __name__ == "__main__":
 
     time_start = time.time()
     # Execute mission
-    execute_mission(host, Go_to_entry_point_mission, headers)
-    execute_mission(host, Go_to_start_point_mission, headers)
-    execute_mission(host, dock_assembly_line_mission, headers)
-    
+    #execute_mission(host, Go_to_entry_point_mission, headers)
+    #execute_mission(host, Go_to_start_point_mission, headers)
+    #execute_mission(host, dock_assembly_line_mission, headers)
+    time.sleep(5.0)
     time_end = time.time()
     print(":: MIR Mission executing time: %.3f seconds" %(time_end-time_start))
     pub_mir_status.publish("   Robot docked to the assembly line. Ready to feed the fixture!")
+    rospy.spin()
+    quit()
