@@ -29,7 +29,7 @@ def pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)
     # Open gripper
     rtde_c.gripperDisable()
     rtde_c.gripperRelease(0)
-    # Move to picking_pose (z = 0.130 for m200 component)
+    # Move to picking_pose (z = 0.130 for Housing component)
     picking_pose = rtde_r.getActualTCPPose()
     picking_pose[2] = z_picking_offset
     print("Component picking Point:")
@@ -43,12 +43,12 @@ def pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)
 
 def place_component(rtde_c, rtde_r, placing_pose, fix_center):
     # Move to placing_pose
-    rtde_c.moveL(placing_pose, 0.1, 0.1)
+    rtde_c.moveL(placing_pose, 0.4, 0.4)
 
     start_poseQ = rtde_r.getActualQ()
     start_pose = rtde_r.getActualTCPPose()
     end_pose = start_pose[:]
-    end_pose[2]= end_pose[2] - 0.07
+    end_pose[2]= end_pose[2] - 0.08
     flag = False
     required_rotation = False
     rtde_c.moveL(end_pose, 0.01, 0.01, True) 
@@ -61,7 +61,7 @@ def place_component(rtde_c, rtde_r, placing_pose, fix_center):
             rtde_c.stopL(1.5)
             flag = True
             required_rotation = True
-        if distance > 0.065:
+        if distance > 0.07:
             flag = True
 
     flag = False
@@ -72,7 +72,7 @@ def place_component(rtde_c, rtde_r, placing_pose, fix_center):
         rtde_c.moveJ(rotated_pose, 0.8, 0.8)
         # Insert component inside the fixture
         insert_pose = rtde_r.getActualTCPPose()
-        insert_pose[2] = insert_pose[2] - 0.07
+        insert_pose[2] = insert_pose[2] - 0.08
         rtde_c.moveL(insert_pose, 0.01, 0.01, True)
         while not flag:
             direction = rtde_r.getTargetTCPSpeed()
@@ -82,7 +82,7 @@ def place_component(rtde_c, rtde_r, placing_pose, fix_center):
             if flag_contact > 0:
                 rtde_c.stopL(1.5)
                 flag = True
-            if distance > 0.065:
+            if distance > 0.07:
                 flag = True
     
     # Open gripper
@@ -95,7 +95,7 @@ def place_component(rtde_c, rtde_r, placing_pose, fix_center):
     rtde_c.moveL(pose, 0.2, 0.2)
     rtde_c.moveJ(take_image_pose_joints, 0.8, 0.8)
 
-def detect_fixture_pose(fixture_model, camera_type, static_broadcaster, tfBuffer):
+def detect_aruco_pose(fixture_model, camera_type, static_broadcaster, tfBuffer):
     bridge = cv_bridge.CvBridge()
     data_color = rospy.wait_for_message("/camera/color/image_raw", sensor_msgs.msg.Image, rospy.Duration(4.0))
     color_image = bridge.imgmsg_to_cv2(data_color, desired_encoding="passthrough")
@@ -103,7 +103,8 @@ def detect_fixture_pose(fixture_model, camera_type, static_broadcaster, tfBuffer
     print(markerIds)
     if markerIds is not None:
         img_axis, rvecs, tvecs = detect_marker_pose(img=img_markers, corners=markerCorners, ids=markerIds, camera_type=camera_type, display=False)
-        
+        cv2.imwrite("/home/carlos/Desktop/samples_for_report/results/video_defense/aruco_fixture_detection.png", img_axis)
+
         for i in range(len(markerIds)):
             if str(markerIds[i][0]) == fixture_model:
                 color_aruco_frame = "color_aruco_id_" + str(markerIds[i][0])
@@ -123,6 +124,8 @@ if __name__ == "__main__":
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
     nb_components = rospy.wait_for_message("/pose_estimation/nb_components", std_msgs.msg.String, rospy.Duration(1200.0))
+    pub_feeding_task_status = rospy.Publisher("/pose_estimation/status", std_msgs.msg.String, queue_size=1)
+
     rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
     rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
 
@@ -146,27 +149,13 @@ if __name__ == "__main__":
 
         # Offset constant parameters
         tool_offset = 0.1245
-        z_picking_offset = 0.130 #0.1315 before, all the calculation are than with 0.130
+        component_offset = 0.005
 
-        x_fixture_offset = 0.0415526468475
-        y_fixture_offset = -0.0405504113613
+        z_picking_offset = 0.130
         height_fixture = 0.150
         z_offset_center_fixture = tool_offset + height_fixture + 0.01
+        z_placing_offset =  0.245
 
-        x_placing_offset = -0.11726419762
-        y_placing_offset = -0.0231597946661
-        z_placing_offset =  0.245 # it is enough distance
-
-        ''' To do the Vision test results
-        off_set = tool_offset + 0.08
-        # Move to the picking-entry pose
-        picking_entry_pose = [t[0], t[1], t[2] + off_set, rot_vector[0], rot_vector[1], rot_vector[2]]
-        rtde_c.moveL(picking_entry_pose, 0.2, 0.2)
-        time.sleep(2.0)
-        home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
-        rtde_c.moveL(home_pose, 0.2, 0.2)
-        time.sleep(1.0)
-        '''
         # Pick Component
         pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)
 
@@ -174,28 +163,44 @@ if __name__ == "__main__":
         take_image_pose_joints = [0.4279041290283203, -1.8154250584044398, -1.332542896270752, -1.5645697873881836, 1.572350025177002, 0.7428669929504395]
         rtde_c.moveJ(take_image_pose_joints, 0.8, 0.8)
 
-        if i == 0:
-            time.sleep(3.0)
-            detect_fixture_pose(fixture_model="200", camera_type="D415", static_broadcaster=static_broadcaster, tfBuffer=tfBuffer)
-            tf_base_fixture200 = tfBuffer.lookup_transform(base_frame, "depth_aruco_id_200", rospy.Time(), rospy.Duration(2.0))
-            t, rot_vector = get_t_rotvector_target(tf_transform_base_target=tf_base_fixture200)
-            time.sleep(1.0)
-            print("Aruco marker position: ")
-            print(t)
-            fix_center = [t[0] + x_fixture_offset, t[1] + y_fixture_offset, z_offset_center_fixture, 2.908, -1.188, 0.0]
-            print("Fixture center: ")
-            print(fix_center)
-            placing_pose = [fix_center[0] + x_placing_offset, fix_center[1] + y_placing_offset, z_placing_offset, -1.287808247339734, 1.070439178974699, -1.074470886939796]
-            print("Placing pose calculated: ")
-            print(placing_pose)
-            print("Placing pose manual (measure it in the teach pendant): ")
+        #if i == 0:
+        time.sleep(3.0)
+        detect_aruco_pose(fixture_model="200", camera_type="D415", static_broadcaster=static_broadcaster, tfBuffer=tfBuffer)
+        tf_base_marker = tfBuffer.lookup_transform(base_frame, "depth_aruco_id_200", rospy.Time(), rospy.Duration(2.0))
+        t, rot_vector, base_T_marker = get_t_rotvector(tf_transform_base_target=tf_base_marker)
+        time.sleep(1.0)
+        print("Aruco marker position: ")
+        print(t)
+        print("Aruco marker orientation: ")
+        print(rot_vector)
+
+        # Calculate the center of the fixture
+        marker_T_fixture = np.eye(4)
+        marker_T_fixture[1,3] = 0.058 
+        marker_T_fixture[0,3] = 0.003
+        base_T_fixture = np.linalg.multi_dot([base_T_marker, marker_T_fixture])
+        fix_center = [base_T_fixture[0,3], base_T_fixture[1,3], z_offset_center_fixture, 2.908, -1.188, 0.0]
+        print("Fixture center: ")
+        print(fix_center)
+
+        # Calulate the placing pose
+        fixture_T_placing = np.eye(4)
+        fixture_T_placing[1,3] = -tool_offset + component_offset
+        base_T_placing = np.linalg.multi_dot([base_T_marker, marker_T_fixture, fixture_T_placing])
+        placing_pose = [base_T_placing[0,3], base_T_placing[1,3], z_placing_offset, -0.762054625026805, 1.7619667569065234, -1.774435905185706]
+
+        print("Placing pose calculated: ")
+        print(placing_pose)
 
         # Place component
         place_component(rtde_c=rtde_c, rtde_r=rtde_r, placing_pose = placing_pose, fix_center = fix_center)
 
     rtde_c.gripperDisable()
+
+    home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
+    rtde_c.moveL(home_pose, 0.4, 0.5)
     rtde_c.stopScript()
     rtde_c.disconnect()
+    pub_feeding_task_status.publish("feeding_task_done")
 
     quit()
-    #rospy.spin()

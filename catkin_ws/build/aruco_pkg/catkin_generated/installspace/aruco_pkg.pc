@@ -1,8 +1,0 @@
-prefix=/home/carlos/git/3DVisionMobileManipulation/catkin_ws/install
-
-Name: aruco_pkg
-Description: Description of aruco_pkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

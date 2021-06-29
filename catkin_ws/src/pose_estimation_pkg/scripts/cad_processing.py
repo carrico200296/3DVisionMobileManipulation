@@ -9,7 +9,7 @@ from functions import *
 def load_cad_model(path):
     cad_model_pcd = o3d.io.read_point_cloud(path, print_progress=True)
     cad_model_pcd = cad_model_pcd.scale(1.0/1000, center=True)
-    cad_model_pcd = cad_model_pcd.voxel_down_sample(voxel_size=0.0007) # with voxel_size = 0.002 is working always (but up-down problem)
+    cad_model_pcd = cad_model_pcd.voxel_down_sample(voxel_size=0.0007)
     cad_model_pcd.translate(translation=(0, 0, 0), relative=False)
     origin_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.02)
     R = origin_frame.get_rotation_matrix_from_xyz((np.pi / 2, 0, 0))
@@ -20,10 +20,9 @@ def load_cad_model(path):
 
 if __name__ == "__main__":
 
-    #cad_model_pcd = o3d.io.read_point_cloud(sys.argv[1], print_progress=True)
     cad_file_path = "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/data/m200.pcd"
     cad_model_pcd, origin_frame = load_cad_model(path=cad_file_path)
-    o3d.visualization.draw_geometries([cad_model_pcd.paint_uniform_color([0.5, 0.5, 0.5])])#, origin_frame])
+    o3d.visualization.draw_geometries([cad_model_pcd.paint_uniform_color([0.5, 0.5, 0.5])])
     picking_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
     frames = [cad_model_pcd.paint_uniform_color([0.7, 0.7, 0.7])]
     for i in range(3):

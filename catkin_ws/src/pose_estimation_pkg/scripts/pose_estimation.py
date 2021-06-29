@@ -26,12 +26,12 @@ import xlsxwriter
 if __name__ == "__main__":
 
     file_time = str(int(time.time()))
-    file_name = '/home/carlos/Desktop/samples_for_report/results/sample_data_' + file_time + '.xlsx' 
+    file_name = '/home/carlos/Desktop/results/sample_data_' + file_time + '.xlsx' 
     workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet()
     row = 0
     column = 0
-    headers = ["Component", "Source PCD points", "Target PCD points", "Correspondence Set", "Global time", "Global fitness", "Global RMSE", "Local time", "Local fitness", "Local RMSE", "Total time"]
+    headers = ["Component", "Source PCD points", "Target PCD points", "Correspondence Set", "Global time", "Global RMSE", "Local time", "Local RMSE", "Total time"]
     for item in headers:
         worksheet.write(row, column, item)
         column+=1
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     ## Parameters
     distance_threshold_plane = 0.004
-    voxel_size = 1.0 # works for m200 and no-downsampled pointcoulds
+    voxel_size = 1.0
 
     print(" :: Waiting for the scene reconstructed point cloud.")
     data = rospy.wait_for_message("/pose_estimation/scene_reconstructed", sensor_msgs.msg.PointCloud2, rospy.Duration(1000.0))
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     print(":: Loading cad_model point cloud.")
     cad_file_path = "/home/carlos/git/3DVisionMobileManipulation/catkin_ws/src/pose_estimation_pkg/data/m200.ply"
     cad_model_pcd, origin_frame = load_cad_model(path=cad_file_path)
-    #o3d.visualization.draw_geometries([cad_model_pcd, origin_frame])
+    o3d.visualization.draw_geometries([cad_model_pcd, origin_frame])
     source, source_down, source_fpfh, source_down_fpfh = preprocess_source_pcd(source=cad_model_pcd, voxel_size=voxel_size)
 
     distances = source.compute_nearest_neighbor_distance()
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     # DBSCAN Clustering
     start_dbscan = time.time()
-    # instead of eps=0.01 (8 seconds), using eps=0.004 (3 seconds), needs to be check with some samples
+    # instead of eps=0.01 (8 seconds), using eps=0.004 (3 seconds)
     scene_pcd_clustered, nb_clusters, scene_pcd = cluster_dbscan(cloud=scene_pcd, eps=0.004, min_samples=100, min_points_cluster = 2000, display=False)
     end_dbscan = time.time()
     print(":: Clustering time: %.3f sec." %(end_dbscan - start_dbscan))
@@ -80,8 +80,10 @@ if __name__ == "__main__":
     column = 0
     object_frames = []
     tf_components_frames = []
+    frame_pose_estimation = []
     for i in range(nb_clusters):
         sample_data.append(str(i+1))
+        frame_pose_estimation.append(o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05))
 
         print("\n:: Calculating 6D Pose for component %d" %(i + 1))
         target, target_down, target_fpfh, target_down_fpfh = preprocess_point_cloud(cloud=scene_pcd_clustered[i], 
@@ -95,7 +97,6 @@ if __name__ == "__main__":
         sample_data.append(len(target.points))
         sample_data.append(len(result_ransac.correspondence_set))
         sample_data.append(time_ransac)
-        sample_data.append(result_ransac.fitness)
         sample_data.append(result_ransac.inlier_rmse)
 
         result_icp, time_icp = execute_local_registration(source=source, target=target,
@@ -104,9 +105,9 @@ if __name__ == "__main__":
         print(">> Registration TIME for component %d : %.3f sec." %(i+1, registration_time))
         print("------------------------------------------------------------------------------\n")
         draw_registration_result(source, target, result_icp.transformation)
+        frame_pose_estimation[i].transform(result_icp.transformation)
 
         sample_data.append(time_icp)
-        sample_data.append(result_icp.fitness)
         sample_data.append(result_icp.inlier_rmse)
         sample_data.append(registration_time)
 
@@ -129,6 +130,10 @@ if __name__ == "__main__":
         print("ERROR")
 
     print("6D Pose Estimation Module finished!")
+
+    frame_pose_estimation.append(scene_pcd)
+    o3d.visualization.draw_geometries(frame_pose_estimation)
+
     row+=1
     headers = ["Component", "X", "Y", "Z", "Rx", "Ry", "Rz", "y1", "y2", "y3"]
     for item in headers:
@@ -172,6 +177,6 @@ if __name__ == "__main__":
         pose_data = []
 
     workbook.close()
-
     rospy.spin()
+
     quit()

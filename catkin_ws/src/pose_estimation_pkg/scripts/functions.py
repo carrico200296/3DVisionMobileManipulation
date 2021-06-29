@@ -205,13 +205,11 @@ def cluster_dbscan(cloud, eps=0.01, min_samples=100, min_points_cluster=2000, di
 
     final_clusters = []
     idx_to_keep = []
-    #final_clusters = list(pcd_clustered)
     for cluster in range(nb_clusters):
         nb_cluster_points = len(pcd_clustered[cluster].points)
         if nb_cluster_points > min_points_cluster:
             idx_to_keep.append(cluster)
         if nb_cluster_points <= min_points_cluster:
-            #del final_clusters[cluster]
             nb_clusters = nb_clusters - 1
             print("   Cluster %d removed. Points: %d" % (cluster, nb_cluster_points))
     for idx in idx_to_keep:
@@ -252,7 +250,7 @@ def extract_clusters(cloud, labels, display=False):
 def load_cad_model(path):
     cad_model_pcd = o3d.io.read_point_cloud(path, print_progress=True)
     cad_model_pcd = cad_model_pcd.scale(1.0/1000, center=True)
-    cad_model_pcd = cad_model_pcd.voxel_down_sample(voxel_size=0.0009) # with voxel_size = 0.002 is working always (but up-down problem)
+    cad_model_pcd = cad_model_pcd.voxel_down_sample(voxel_size=0.0009)
     cad_model_pcd.translate(translation=(0, 0, 0), relative=False)
     origin_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.05)
     R = origin_frame.get_rotation_matrix_from_xyz((np.pi / 2, 0, 0))
@@ -296,7 +294,7 @@ def preprocess_source_pcd(source, voxel_size):
     source.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     source_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
 
-    radius_feature = voxel_size * 10 # before was 5 but up-down problem
+    radius_feature = voxel_size * 10
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)
     source_fpfh = o3d.registration.compute_fpfh_feature(source, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
     source_down_fpfh = o3d.registration.compute_fpfh_feature(source_down, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -320,7 +318,7 @@ def preprocess_point_cloud(cloud, voxel_size):
     pcd.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     pcd_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=50))
     
-    radius_feature = voxel_size * 10 # before was 5 but up-down problem
+    radius_feature = voxel_size * 10
     print("   Compute FPFH feature with search radius %.3f." % radius_feature)
     pcd_fpfh = o3d.registration.compute_fpfh_feature(pcd, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
     pcd_down_fpfh = o3d.registration.compute_fpfh_feature(pcd_down, o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -334,7 +332,7 @@ def preprocess_point_cloud(cloud, voxel_size):
 def draw_registration_result(source, target, transformation):
     source_temp = copy.deepcopy(source)
     target_temp = copy.deepcopy(target)
-    # Card model in gray
+    # Cad model in gray
     source_temp.paint_uniform_color([0.7, 0.7, 0.7])
 
     source_temp.transform(transformation)
@@ -348,15 +346,15 @@ def draw_registration_result(source, target, transformation):
 def execute_global_registration(source, target, source_fpfh, target_fpfh,
                                 voxel_size):
 
-    max_correspondence_distance = 0.2 # with 0.5 problem of up-down #voxel_size * 0.5 # before was 1.5
+    max_correspondence_distance = 0.2
     estimation_method = o3d.registration.TransformationEstimationPointToPoint(False)
-    #estimation_method = o3d.registration.TransformationEstimationPointToPlane() PointToPlane is not working!!!
-    ransac_n = 4 #with ransac_n = 4 up-down problem
+    #estimation_method = o3d.registration.TransformationEstimationPointToPlane()
+    ransac_n = 4
     edge_length = 0.9
     checkers = [o3d.registration.CorrespondenceCheckerBasedOnEdgeLength(edge_length),
                 o3d.registration.CorrespondenceCheckerBasedOnDistance(max_correspondence_distance)]
     #           CorrespondenceCheckerBasedOnNormal
-    max_iteration = 400000 #0 # with 100000 didnt work well, with 4000000 takes too much time but works
+    max_iteration = 400000
     max_validation = 500
     criteria = o3d.registration.RANSACConvergenceCriteria(max_iteration, max_validation)
 
@@ -400,7 +398,7 @@ def execute_fast_global_registration(source, target, source_fpfh,
 def execute_local_registration(source, target, result_ransac, voxel_size):
 
     start_local = time.time()
-    max_correspondence_distance = 0.2 #voxel_size * 0.4 # before was 0.4
+    max_correspondence_distance = 0.2 
     init_trans = result_ransac.transformation
     #estimation_method = o3d.registration.TransformationEstimationPointToPoint(False)
     estimation_method = o3d.registration.TransformationEstimationPointToPlane()
@@ -513,13 +511,11 @@ def tf_transform_pcd_ICP(source_pcd, target_pcd, tf_transform, pcd_view):
     pcd_view.transform(T)
     source_pcd_IPC = copy.deepcopy(source_pcd)
     source_pcd_IPC.transform(T)
-    #source_pcd_IPC.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=0.4, max_nn=30))
-    #source_pcd_IPC.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=0.4, max_nn=30))
 
     estimation_method = o3d.registration.TransformationEstimationPointToPoint()
-    relative_fitness = 1e-6  # 1e-9 too much time
-    relative_rmse = 1e-6 # 1e-7 too much time
-    max_iteration = 200 # 500 too much
+    relative_fitness = 1e-6 
+    relative_rmse = 1e-6
+    max_iteration = 200
     criteria = o3d.registration.ICPConvergenceCriteria(
                                             relative_fitness=relative_fitness,
                                             relative_rmse=relative_rmse,
@@ -587,6 +583,24 @@ def get_t_rotvector_target(tf_transform_base_target):
 
     return t, rot_vector
 
+def get_t_rotvector(tf_transform_base_target):
+    t = [tf_transform_base_target.transform.translation.x,
+         tf_transform_base_target.transform.translation.y,
+         tf_transform_base_target.transform.translation.z]
+
+    quaternion = [tf_transform_base_target.transform.rotation.x,
+                  tf_transform_base_target.transform.rotation.y,
+                  tf_transform_base_target.transform.rotation.z,
+                  tf_transform_base_target.transform.rotation.w]
+
+    rot_matrix = R.from_quat(quaternion).as_dcm()
+    rot_vector = R.from_quat(quaternion).as_rotvec()
+    T_transformation = np.eye(4)
+    T_transformation[:3,:3] = rot_matrix
+    T_transformation[:3,3] = t
+
+    return t, rot_vector, T_transformation
+
 
 
 #%% ARUCO FUNCTIONS
@@ -616,12 +630,6 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
 
     distCoeffs = np.zeros((5,1))
     if camera_type == "D415": 
-        '''
-        # camera_matrix from camera_calibration pkg ros wiki
-        camera_mtx = np.array([[950.950833, 0.0, 612.473931],
-                               [0.0, 958.792824, 340.034433],
-                               [0.0, 0.0, 1.0]])
-        '''
         # default camera_matrix from realsense ros wrapper
         camera_mtx = np.array([[931.7362060546875, 0.0, 622.6597900390625],
                                 [0.0, 931.1814575195312, 354.47479248046875],
@@ -631,7 +639,7 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
         camera_mtx = np.array([[617.0361328125, 0.0, 327.0294189453125],
                                 [0.0, 617.2791137695312, 237.9000701904297],
                                 [0.0, 0.0, 1.0]])
-    size_of_marker =  0.04 # side lenght of the marker in meter
+    size_of_marker =  0.04 # side lenght of the marker in meters
     length_of_axis = 0.1
     rvecs,tvecs = aruco.estimatePoseSingleMarkers(corners, size_of_marker, camera_mtx, distCoeffs)
     img_axis = aruco.drawDetectedMarkers(img.copy(), corners, ids)
@@ -646,4 +654,3 @@ def detect_marker_pose(img, corners, ids, camera_type, display=False):
         plt.show()
 
     return img_axis, rvecs, tvecs
-

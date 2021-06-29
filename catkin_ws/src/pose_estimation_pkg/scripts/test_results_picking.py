@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     x_axis_original = rot_matrix_original[:3,0]
     y_axis_original = rot_matrix_original[:3,1]
-    z_axis_original = rot_matrix_original[:3,1]
+    z_axis_original = rot_matrix_original[:3,2]
 
     y_axis = rot_matrix[:3,1]
     y_axis[2] = 0.0
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     rot_matrix[:3,0] = np.transpose(x_axis)
     rot_matrix[:3,2] = np.transpose(np.array([0.0, 0.0, -1.0]))
-    z_axis = rot_matrix[:3,1]
+    z_axis = rot_matrix[:3,2]
     rot_vector = R.from_dcm(rot_matrix).as_rotvec()
 
     pose_data = []
@@ -152,18 +152,7 @@ if __name__ == "__main__":
 
     # Offset constant parameters
     tool_offset = 0.1245
-    z_picking_offset = 0.17238 #0.1315 before, all the calculation are than with 0.130
-
-    x_fixture_offset = 0.0415526468475
-    y_fixture_offset = -0.0405504113613
-    height_fixture = 0.150
-    z_offset_center_fixture = tool_offset + height_fixture + 0.01
-
-    x_placing_offset = -0.11726419762
-    y_placing_offset = -0.0231597946661
-    z_placing_offset =  0.245 # it is enough distance
-
-    off_set = tool_offset + 0.08
+    z_picking_offset = 0.17238
 
     # Pick Component
     pick_component(rtde_c, rtde_r, t, rot_vector, tool_offset, z_picking_offset)

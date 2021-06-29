@@ -1,6 +1,5 @@
 <launch>
-    <!-- Calculation done in tf_transformations.py script-->
+    <!-- Calculation done in hand-eye-calibration/mobile_manipulator/tf_transformations.py script-->
     <node pkg="tf2_ros" type="static_transform_publisher" name="ur_camera_broadcaster"
     args="-0.01731803 -0.08373769  0.01473462 -0.50004797  0.50384837 -0.50147482 -0.49458251 wrist_3_link camera_link" /> <!-- For UR5e mobile manipulator-->
-    <!-- UR5e fixed station args="-0.01900175 -0.0842239 0.01904847 0.49694298 -0.50709689  0.49515566  0.50072077 wrist_3_link camera_link" /> -->
 </launch>

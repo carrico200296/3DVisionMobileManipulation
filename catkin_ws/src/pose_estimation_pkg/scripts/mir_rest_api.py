@@ -21,7 +21,7 @@ def get_status(host):
     if status == 200: #if there is an established connection
         txt = get_request.text
         status_dict = json.loads(txt)
-        state = str(status_dict.get('state_text'))  #State could be: Executing, Ready, Pause,...
+        state = str(status_dict.get('state_text'))
         if state == 'Ready':
             return False
         else:
@@ -65,13 +65,19 @@ if __name__ == "__main__":
     Go_to_entry_point_mission = {"mission_id": "fdc728b0-c21b-11eb-8133-000129922f1c"} #GUID for "Go_to_entry_point" mission
 
     time_start = time.time()
-    # Execute mission
+    # Execute missions
     #execute_mission(host, Go_to_entry_point_mission, headers)
-    #execute_mission(host, Go_to_start_point_mission, headers)
-    #execute_mission(host, dock_assembly_line_mission, headers)
+    execute_mission(host, Go_to_start_point_mission, headers)
+    execute_mission(host, dock_assembly_line_mission, headers)
     time.sleep(5.0)
     time_end = time.time()
     print(":: MIR Mission executing time: %.3f seconds" %(time_end-time_start))
     pub_mir_status.publish("   Robot docked to the assembly line. Ready to feed the fixture!")
+    feeding_task_flag = rospy.wait_for_message("/pose_estimation/status", std_msgs.msg.String, rospy.Duration(8000.0))
+
+    if feeding_task_flag.data == "feeding_task_done":
+        execute_mission(host, Go_to_start_point_mission, headers)
+        print(":: Assembly line fed!")
+
     rospy.spin()
     quit()

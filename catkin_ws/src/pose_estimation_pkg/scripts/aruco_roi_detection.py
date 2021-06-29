@@ -35,18 +35,17 @@ if __name__ == "__main__":
     rtde_c = rtde_control.RTDEControlInterface("192.168.12.245")
     rtde_r = rtde_receive.RTDEReceiveInterface("192.168.12.245")
     home_pose = [0.24629746314958142, 0.39752299707520433, 0.5357813117643294, 2.890757991539826, -1.230076763649183, 1.296199316724078e-05]
-    home_pose_joints = [-0.25712525844573975, 1.7671558856964111, 2.553719997406006, 0.3392879366874695, 0.14902238547801971, -0.12733711302280426]
     rtde_c.moveL(home_pose, 0.2, 0.5)
     rtde_c.stopScript()
     rtde_c.disconnect()
-    time.sleep(1.0) # wait 1 seconds
+    time.sleep(1.0)
 
     broadcaster = tf2_ros.TransformBroadcaster()
     static_broadcaster = tf2_ros.StaticTransformBroadcaster()
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
-    time.sleep(3.0) # wait 2 seconds until the realsense is initialized 
-    rate = rospy.Rate(10.0) # this has to be checked in order to do a good filtering, check also the transformation from 2D to 3D
+    time.sleep(3.0)
+    rate = rospy.Rate(10.0)
     time_start = time.time()
     dt_time = 0.0
 
@@ -69,5 +68,4 @@ if __name__ == "__main__":
             except CvBridgeError as e:
                 print(e)
         dt_time = time.time() - time_start
-    print("final_time: ")
     quit()

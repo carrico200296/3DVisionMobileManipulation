@@ -46,10 +46,10 @@ if __name__ == "__main__":
         x_min_idx, y_min_idx, z_min_idx = np.argmin(detected_roi, axis=0)
         x_max, y_max, z_max = np.amax(detected_roi, axis=0)
         x_max_idx, y_max_idx, z_max_idx = np.argmax(detected_roi, axis=0)
-        x_min = x_min - size_aruco/2 
-        x_max = x_max + size_aruco/2 
+        x_min = x_min - size_aruco/2
+        x_max = x_max + size_aruco/2
         y_min = y_min - size_aruco/2 
-        y_max = y_max + size_aruco/2 
+        y_max = y_max + size_aruco/2
         z_min = z_max - 0.2
 
         print("x_min = %.3f idx = %d" %(x_min, x_min_idx))
